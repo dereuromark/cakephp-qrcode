@@ -141,6 +141,7 @@ class QrCodeHelper extends Helper {
 			'imageBase64' => true,
 			'transparent' => false,
 			'level' => EccLevel::L,
+			'connectPaths' => true,
 		];
 
 		switch ($options['level']) {
