@@ -5,23 +5,22 @@ namespace QrCode\View;
 use Cake\Event\EventManager;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
-use Cake\View\View;
 use QrCode\Utility\Config;
 
-class QrCodeView extends View {
+class QrCodePngView extends QrCodeView {
 
 	/**
 	 * @return string
 	 */
 	public static function contentType(): string {
-		return 'image/svg+xml';
+		return 'image/png';
 	}
 
 	/**
 	 * @return void
 	 */
 	public function initialize(): void {
-		$ext = $this->request->getParam('_ext') ?: 'svg';
+		$ext = $this->request->getParam('_ext') ?: 'png';
 		/** @var string $contentType */
 		$contentType = $this->response->getMimeType($ext);
 
@@ -31,8 +30,6 @@ class QrCodeView extends View {
 			$response = $response->withType($contentType);
 		}
 		$this->setResponse($response);
-
-		parent::initialize();
 	}
 
 	/**
@@ -41,7 +38,7 @@ class QrCodeView extends View {
 	 * @var array<string, mixed>
 	 */
 	protected array $_defaultConfig = [
-		'ext' => 'svg',
+		'ext' => 'png',
 	];
 
 	/**

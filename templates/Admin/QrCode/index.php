@@ -1,7 +1,8 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var array<string, int> $models
+ * @var string|null $result
+ * @var array $options
  */
 ?>
 <nav class="actions large-3 medium-4 columns col-sm-4 col-xs-12" id="actions-sidebar">
@@ -13,16 +14,31 @@
 </nav>
 <div class="qr-code index content large-9 medium-8 columns col-sm-8 col-12">
 
-    <h2><?= __('QrCode') ?></h2>
+    <h2><?= __('QR Codes') ?></h2>
 
-    <ul>
-		<?php foreach ($models as $model => $count): ?>
-		<li>
-			<?php echo h($model); ?>: <?php echo $count; ?>x <?php echo $this->Form->postLink('Reset', ['?' => ['model' => $model]], ['confirm' => 'Sure?']); ?>
-		</li>
-		<?php endforeach; ?>
-	</ul>
+	<p>By default, we render a simple SVG image that can be scaled up/down easily.</p>
 
-	<p><?= $this->Html->link(__('Details'), ['action' => 'listing'], ['class' => '']) ?></p>
+	<div class="col-md-6" style="margin-bottom: 16px;">
+		<?php
+		if ($result) {
+			echo '<h4>Result</h4>';
+			echo $this->QrCode->image($result, $options);
+		}
+		?>
+	</div>
+
+	<h4>Generate QR Code</h4>
+
+	<?php echo $this->Form->create();?>
+	<p>Enter some text (URL, ...)</p>
+
+	<?php
+	echo $this->Form->control('content', ['autocomplete' => 'off', 'type' => 'textarea']);
+	?>
+	<div class="col-md-offset-2 col-md-6">
+		<?php echo $this->Form->button(__('Go'), ['class' => 'btn btn-success']);?>
+	</div>
+	<?php echo $this->Form->end(); ?>
+
 
 </div>

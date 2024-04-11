@@ -2,6 +2,6 @@
 
 return [
 	'QrCode' => [
-		'userIdField' => 'id',
+		'formatter' => \QrCode\Utility\Formatter::class,
 	],
 ];

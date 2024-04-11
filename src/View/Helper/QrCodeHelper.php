@@ -7,6 +7,9 @@ use chillerlan\QRCode\Common\EccLevel;
 use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use QrCode\Utility\Config;
+use QrCode\Utility\Formatter;
+use QrCode\Utility\FormatterInterface;
 
 /**
  * @property \Cake\View\Helper\UrlHelper $Url
@@ -30,25 +33,98 @@ class QrCodeHelper extends Helper {
 	 */
 	protected array $_defaultConfig = [
 		'colorMap' => [],
+		'formatter' => Formatter::class,
 	];
+
+	/**
+	 * @return \QrCode\Utility\FormatterInterface
+	 */
+	public function formatter(): FormatterInterface {
+		/** @var class-string<FormatterInterface> $className */
+		$className = $this->getConfig('formatter');
+
+		return new $className();
+	}
 
 	/**
 	 * Base64 encoded image directly returned.
 	 *
 	 * @param string $content
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 *
 	 * @return string
 	 */
 	public function image(string $content, array $options = []): string {
+		$options = $this->normalizeOptions($options);
+
+		$qrcode = (new QRCode(new QROptions($options)))->render($content);
+
+		return sprintf('<img src="%s" alt="QR Code">', $qrcode);
+	}
+
+	/**
+	 * SVG image from controller rendering.
+	 *
+	 * Make sure the action is allowed/accessible.
+	 *
+	 * @param string $content
+	 * @param array<string, mixed> $options
+	 *
+	 * @return string
+	 */
+	public function svg(string $content, array $options = []): string {
+		$url = $this->Url->build(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => Config::TYPE_SVG, '?' => ['content' => $content] + $options]);
+
+		return sprintf('<img src="%s" alt="QR Code">', $url);
+	}
+
+	/**
+	 * PNG image from controller rendering.
+	 *
+	 * Make sure the action is allowed/accessible.
+	 *
+	 * @param string $content
+	 * @param array<string, mixed> $options
+	 *
+	 * @return string
+	 */
+	public function png(string $content, array $options = []): string {
+		$url = $this->Url->build(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => Config::TYPE_PNG, '?' => ['content' => $content] + $options]);
+
+		return sprintf('<img src="%s" alt="QR Code">', $url);
+	}
+
+	/**
+	 * Raw image display.
+	 *
+	 * @internal
+	 *
+	 * @param string $content
+	 * @param array<string, mixed> $options
+	 *
+	 * @return string
+	 */
+	public function raw(string $content, array $options = []): string {
+		$options = $this->normalizeOptions($options);
+
+		$options['outputBase64'] = false;
+
+		return (new QRCode(new QROptions($options)))->render($content);
+	}
+
+	/**
+	 * @param array<string, mixed> $options
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function normalizeOptions(array $options): array {
 		$options += [
 			'version' => Version::AUTO, // to avoid code length issues
 			'scale' => 3,
 			'margin' => 0,
 			'imageBase64' => true,
 			'transparent' => false,
-			'eccLevel' => EccLevel::L,
-			//'outputType' => QROutputInterface::MARKUP_SVG,
+			'level' => EccLevel::L,
 		];
 
 		switch ($options['level']) {
@@ -69,29 +145,11 @@ class QrCodeHelper extends Helper {
 		}
 
 		$options = [
-			'imageTransparent' => $options['transparent'],
-			'addQuietzone' => $options['margin'] > 0,
-		] + $options;
+				'imageTransparent' => $options['transparent'],
+				'addQuietzone' => $options['margin'] > 0,
+			] + $options;
 
-		$qrcode = (new QRCode(new QROptions($options)))->render($content);
-
-		return sprintf('<img src="%s" alt="QR Code">', $qrcode);
-	}
-
-	/**
-	 * SVG image from controller rendering.
-	 *
-	 * Make sure the action is allowed/accessible.
-	 *
-	 * @param string $content
-	 * @param array $options
-	 *
-	 * @return string
-	 */
-	public function svg(string $content, array $options = []): string {
-		$url = $this->Url->build(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '?' => ['content' => $content] + $options]);
-
-		return sprintf('<img src="%s" alt="QR Code">', $url);
+		return $options;
 	}
 
 }

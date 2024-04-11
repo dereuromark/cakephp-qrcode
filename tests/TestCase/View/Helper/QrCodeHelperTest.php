@@ -55,7 +55,7 @@ class QrCodeHelperTest extends TestCase {
 		$content = 'Foo Bar';
 		$image = $this->QrCode->svg($content);
 		$this->assertNotEmpty($image);
-		$expected = '<img src="/qr-code/QrCode/image?content=Foo+Bar" alt="QR Code">';
+		$expected = '<img src="/qr-code/qr-code/image.svg?content=Foo+Bar" alt="QR Code">';
 		$this->assertSame($expected, $image);
 	}
 

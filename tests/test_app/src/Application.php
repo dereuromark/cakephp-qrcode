@@ -5,6 +5,7 @@ namespace TestApp;
 use Cake\Http\BaseApplication;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
 class Application extends BaseApplication {
@@ -22,6 +23,8 @@ class Application extends BaseApplication {
 	 * @return void
 	 */
 	public function routes(RouteBuilder $routes): void {
+		$routes->setRouteClass(DashedRoute::class);
+		$routes->addExtensions(['png', 'svg']);
 		$routes->fallbacks();
 
 		$routes->plugin(
