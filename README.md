@@ -14,10 +14,14 @@ This branch is for use with **CakePHP 5.0+**. For details see [version map](http
 
 ## Motivation
 
-Hopefully we can have all the features back up and working soon.
+Wraps [chillerlan/php-qrcode/](https://github.com/chillerlan/php-qrcode/) library to have an easy to use
+out-of-the-box interface for most common QR codes.
 
 ## Features
 
+Supports:
+- base64encoded (default)
+- svg/png as controller action generated on-the-fly image
 
 ### Install, Setup, Usage
 See the **[Docs](docs/README.md)** for details.
