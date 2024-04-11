@@ -11,7 +11,7 @@ Then you can use it in your views to display QR codes:
 echo $this->QrCode->image($text, $optionalOptions);
 ```
 
-By default it uses base64encoded images, so no 2nd request is required.
+By default, it uses base64encoded images, so no 2nd request is required.
 
 ### Formatter
 You can use the built-in formatter for most common QR code types:
@@ -26,11 +26,20 @@ echo $this->QrCode->image(...);
 ```
 It will help to normalize user input coming from forms or alike.
 
-## Controller rendering
+### Controller rendering
 If you want more control over the image, as well as type (png, svg), you
 can also let the controller action render it and use it as a generated
 on-the-fly image.
 
+```php
+echo $this->QrCode->svg($content, $options);
+// or
+echo $this->QrCode->png($content, $options);
+```
+
+### Advanced usage
+
+See also https://php-qrcode.readthedocs.io/en/v5.0.x/Usage/Advanced-usage.html
 
 ## Admin Backend
 Go to `/admin/qr-code`.
