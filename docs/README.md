@@ -1,19 +1,5 @@
 # QrCode Plugin docs
 
-## How to include
-Installing the Plugin is pretty much as with every other CakePHP Plugin.
-
-Install using Packagist/Composer:
-```
-composer require dereuromark/cakephp-qrcode
-```
-
-The following command can enable the plugin:
-```
-bin/cake plugin load QrCode
-```
-or manually add it to your `Application` class.
-
 ## Helper usage
 
 Add the helper in your `AppView` class:

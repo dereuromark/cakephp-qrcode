@@ -23,8 +23,22 @@ Supports:
 - base64encoded (default)
 - svg/png as controller action generated on-the-fly image
 
-### Install, Setup, Usage
+## Install/Setup
+Installing the Plugin is pretty much as with every other CakePHP Plugin.
+
+Install using Packagist/Composer:
+```
+composer require dereuromark/cakephp-qrcode
+```
+
+The following command can enable the plugin:
+```
+bin/cake plugin load QrCode
+```
+or manually add it to your `Application` class.
+
+### Usage
 See the **[Docs](docs/README.md)** for details.
 
-### Demo
+## Demo
 See https://sandbox.dereuromark.de/sandbox/qrcode-examples
