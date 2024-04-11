@@ -1,0 +1,11 @@
+/phpunit.phar
+/.phpunit.result.cache
+/vendor/
+/tmp/
+/composer.lock
+/composer.phar
+# IDE and editor specific files #
+#################################
+/nbproject/
+/.idea/
+/.phpstorm.meta.php

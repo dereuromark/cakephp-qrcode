@@ -1,0 +1,69 @@
+{
+	"name": "dereuromark/cakephp-qrcode",
+	"description": "CakePHP QR Code Plugin",
+	"type": "cakephp-plugin",
+	"keywords": [
+		"cakephp",
+		"plugin",
+		"qr code"
+	],
+	"homepage": "https://github.com/dereuromark/cakephp-qrcode/",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Mark Scherer",
+			"homepage": "https://www.dereuromark.de",
+			"role": "Maintainer"
+		},
+		{
+			"name": "Other contributors",
+			"homepage": "https://github.com/dereuromark/cakephp-qrcode/graphs/contributors",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/dereuromark/cakephp-qrcode/issues",
+		"source": "https://github.com/dereuromark/cakephp-qrcode/"
+	},
+	"require": {
+		"php": ">=8.1",
+		"cakephp/cakephp": "^5.0.0",
+		"chillerlan/php-qrcode": "^5.0"
+	},
+	"require-dev": {
+		"fig-r/psr2r-sniffer": "dev-master",
+		"phpunit/phpunit": "^10.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"QrCode\\": "src/",
+			"QrCode\\Test\\Fixture\\": "tests/Fixture/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"QrCode\\Test\\": "tests/",
+			"Cake\\Test\\": "vendor/cakephp/cakephp/tests/",
+			"TestApp\\": "tests/test_app/src/"
+		}
+	},
+	"prefer-stable": true,
+	"scripts": {
+		"test": "phpunit",
+		"test-coverage": "phpunit --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
+		"stan": "phpstan analyse",
+		"stan-tests": "phpstan analyse -c tests/phpstan.neon",
+		"stan-setup": "cp composer.json composer.backup && composer require --dev phpstan/phpstan:^1.0.0 && mv composer.backup composer.json",
+		"lowest": "validate-prefer-lowest",
+		"lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json",
+		"cs-check": "phpcs --extensions=php",
+		"cs-fix": "phpcbf --extensions=php"
+	},
+	"config": {
+		"lock": false,
+		"allow-plugins": {
+			"cakephp/plugin-installer": true,
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
+}

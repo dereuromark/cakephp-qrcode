@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 colors="true"
+		 bootstrap="tests/bootstrap.php"
+		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd">
+	<php>
+		<ini name="memory_limit" value="-1"/>
+		<ini name="apc.enable_cli" value="1"/>
+		<!-- E_ALL => 32767 -->
+		<!-- E_ALL & ~E_USER_DEPRECATED => 16383 -->
+		<ini name="error_reporting" value="32767"/>
+	</php>
+
+	<testsuites>
+		<testsuite name="qrcode">
+			<directory>tests/TestCase/</directory>
+		</testsuite>
+	</testsuites>
+
+	<extensions>
+		<bootstrap class="Cake\TestSuite\Fixture\Extension\PHPUnitExtension"/>
+	</extensions>
+
+	<source>
+		<include>
+			<directory suffix=".php">src/</directory>
+		</include>
+	</source>
+</phpunit>
