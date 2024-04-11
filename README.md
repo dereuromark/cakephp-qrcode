@@ -41,4 +41,4 @@ or manually add it to your `Application` class.
 See the **[Docs](docs/README.md)** for details.
 
 ## Demo
-See https://sandbox.dereuromark.de/sandbox/qrcode-examples
+See https://sandbox.dereuromark.de/sandbox/qr-code-examples
