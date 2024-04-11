@@ -5,6 +5,7 @@ namespace QrCode\View\Helper;
 use Cake\View\Helper;
 use chillerlan\QRCode\Common\EccLevel;
 use chillerlan\QRCode\Common\Version;
+use chillerlan\QRCode\Output\QROutputInterface;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use QrCode\Utility\Config;
@@ -15,11 +16,6 @@ use QrCode\Utility\FormatterInterface;
  * @property \Cake\View\Helper\UrlHelper $Url
  */
 class QrCodeHelper extends Helper {
-
-	/**
-	 * @var int
-	 */
-	public const HTML_TYPE_FA6 = 1;
 
 	/**
 	 * @var array
@@ -108,6 +104,26 @@ class QrCodeHelper extends Helper {
 		$options = $this->normalizeOptions($options);
 
 		$options['outputBase64'] = false;
+
+		return (new QRCode(new QROptions($options)))->render($content);
+	}
+
+	/**
+	 * Get Imagick resource for further customization.
+	 *
+	 * @internal
+	 *
+	 * @param string $content
+	 * @param array<string, mixed> $options
+	 *
+	 * @return object
+	 */
+	public function resource(string $content, array $options = []): object {
+		$options = $this->normalizeOptions($options);
+
+		$options['outputBase64'] = false;
+		$options['outputType'] = QROutputInterface::IMAGICK;
+		$options['returnResource'] = true;
 
 		return (new QRCode(new QROptions($options)))->render($content);
 	}

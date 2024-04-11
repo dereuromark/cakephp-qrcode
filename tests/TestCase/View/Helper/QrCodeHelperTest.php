@@ -5,6 +5,7 @@ namespace QrCode\Test\TestCase\View\Helper;
 
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
+use Imagick;
 use QrCode\View\Helper\QrCodeHelper;
 
 class QrCodeHelperTest extends TestCase {
@@ -57,6 +58,21 @@ class QrCodeHelperTest extends TestCase {
 		$this->assertNotEmpty($image);
 		$expected = '<img src="/qr-code/qr-code/image.svg?content=Foo+Bar" alt="QR Code">';
 		$this->assertSame($expected, $image);
+	}
+
+	/**
+	 * @uses \QrCode\View\Helper\QrCodeHelper::svg()
+	 *
+	 * @return void
+	 */
+	public function testResource(): void {
+		$this->skipIf(!class_exists(Imagick::class), 'Imagick not available');
+
+		$content = 'Foo Bar';
+		$image = $this->QrCode->resource($content);
+		$this->assertInstanceOf(Imagick::class, $image);
+
+		$this->assertNotEmpty($image->getImageBlob());
 	}
 
 }
