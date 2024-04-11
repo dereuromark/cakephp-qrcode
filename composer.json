@@ -60,7 +60,6 @@
 		"cs-fix": "phpcbf --extensions=php"
 	},
 	"config": {
-		"lock": false,
 		"allow-plugins": {
 			"cakephp/plugin-installer": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true
