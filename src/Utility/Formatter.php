@@ -16,6 +16,7 @@ class Formatter implements FormatterInterface {
 		'sms' => 'Text message',
 		'email' => 'E-Mail',
 		'geo' => 'Geo',
+		'wifi' => 'Wifi Network',
 		'market' => 'Market',
 		'card' => 'Vcard',
 	];
@@ -146,6 +147,27 @@ class Formatter implements FormatterInterface {
 		}
 
 		return 'MECARD:' . implode(';', $res) . ';';
+	}
+
+	/**
+	 * @param string $network
+	 * @param string $password
+	 * @param string|null $type
+	 *
+	 * @return string
+	 */
+	public function formatWifi(string $network, string $password, ?string $type = null): string {
+		if ($type === null) {
+			$type = 'WPA';
+		}
+
+		$options = [
+			'T:' . $type,
+			'S:' . $network,
+			'P:' . $password,
+		];
+
+		return 'WIFI:' . implode(';', $options);
 	}
 
 	/**
