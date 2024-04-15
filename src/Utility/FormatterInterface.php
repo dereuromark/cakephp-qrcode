@@ -2,6 +2,9 @@
 
 namespace QrCode\Utility;
 
+/**
+ * @method formatWifi(string $network, string $password, string $type = null)
+ */
 interface FormatterInterface {
 
 	/**
