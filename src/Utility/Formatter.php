@@ -167,7 +167,7 @@ class Formatter implements FormatterInterface {
 			'P:' . $password,
 		];
 
-		return 'WIFI:' . implode(';', $options);
+		return 'WIFI:' . implode(';', $options) . ';';
 	}
 
 	/**

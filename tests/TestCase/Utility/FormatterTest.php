@@ -42,7 +42,7 @@ class FormatterTest extends TestCase {
 	public function testWifi(): void {
 		$network = 'FooBar';
 		$result = $this->formatter->formatWifi($network, 'pwd');
-		$this->assertSame('WIFI:T:WPA;S:FooBar;P:pwd', $result);
+		$this->assertSame('WIFI:T:WPA;S:FooBar;P:pwd;', $result);
 	}
 
 }
