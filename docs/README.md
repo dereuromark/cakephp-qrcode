@@ -15,6 +15,15 @@ By default, it uses base64encoded images, so no 2nd request is required.
 
 ### Formatter
 You can use the built-in formatter for most common QR code types:
+- Text
+- Url
+- Phone Number (Call)
+- Text message (SMS)
+- eMail
+- Geo Coordinates (Maps)
+- Wifi Network
+- Market
+- Vcard
 
 ```php
 $text = $this->Qrcode->formatter()->formatText($text);
