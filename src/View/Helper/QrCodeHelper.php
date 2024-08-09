@@ -140,7 +140,7 @@ class QrCodeHelper extends Helper {
 			'margin' => 0,
 			'imageBase64' => true,
 			'transparent' => false,
-			'level' => EccLevel::L,
+			'level' => 'L',
 			'connectPaths' => true,
 		];
 
