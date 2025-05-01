@@ -10,7 +10,7 @@
 
 QrCode plugin for CakePHP applications.
 
-This branch is for use with **CakePHP 5.0+**. For details see [version map](https://github.com/dereuromark/cakephp-qrcode/wiki#cakephp-version-map).
+This branch is for use with **CakePHP 5.1+**. For details see [version map](https://github.com/dereuromark/cakephp-qrcode/wiki#cakephp-version-map).
 
 ## Motivation
 
