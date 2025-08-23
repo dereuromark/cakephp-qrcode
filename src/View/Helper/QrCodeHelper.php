@@ -162,9 +162,9 @@ class QrCodeHelper extends Helper {
 		}
 
 		$options = [
-				'imageTransparent' => $options['transparent'],
-				'addQuietzone' => $options['margin'] > 0,
-			] + $options;
+			'imageTransparent' => $options['transparent'],
+			'addQuietzone' => $options['margin'] > 0,
+		] + $options;
 
 		return $options;
 	}
