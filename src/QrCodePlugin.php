@@ -88,7 +88,7 @@ class QrCodePlugin extends BasePlugin {
 	/**
 	 * Register application container services.
 	 *
-	 * @link https://book.cakephp.org/4/en/development/dependency-injection.html#dependency-injection
+	 * @link https://book.cakephp.org/5/en/development/dependency-injection.html#dependency-injection
 	 *
 	 * @param \Cake\Core\ContainerInterface $container The Container to update.
 	 *
