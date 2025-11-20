@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace QrCode\Test\TestCase\Utility;
 
 use Cake\TestSuite\TestCase;
-use Cake\View\View;
 use QrCode\Utility\Formatter;
 
 class FormatterTest extends TestCase {
@@ -19,8 +18,7 @@ class FormatterTest extends TestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$view = new View();
-		$this->formatter = new Formatter($view);
+		$this->formatter = new Formatter();
 
 		$this->loadRoutes();
 	}

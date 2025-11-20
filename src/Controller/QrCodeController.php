@@ -4,7 +4,9 @@ namespace QrCode\Controller;
 
 use App\Controller\AppController;
 use Cake\Core\Configure;
+use Cake\Http\Exception\BadRequestException;
 use chillerlan\QRCode\Output\QROutputInterface;
+use InvalidArgumentException;
 use QrCode\Utility\Formatter;
 use QrCode\Utility\FormatterInterface;
 use QrCode\View\QrCodePngView;
@@ -25,6 +27,10 @@ class QrCodeController extends AppController {
 	public function image() {
 		$content = $this->request->getQuery('content');
 
+		if ($content && strlen($content) > 2953) { // QR code max capacity
+			throw new BadRequestException('Content too long for QR code');
+		}
+
 		$result = $this->formatter()->formatText($content);
 		$options = [];
 
@@ -39,8 +45,13 @@ class QrCodeController extends AppController {
 	 * @return \QrCode\Utility\FormatterInterface
 	 */
 	public function formatter(): FormatterInterface {
-		/** @var class-string<FormatterInterface> $className */
 		$className = Configure::read('QrCode.formatter') ?? Formatter::class;
+
+		if (!is_string($className) || !is_subclass_of($className, FormatterInterface::class)) {
+			throw new InvalidArgumentException(
+				sprintf('Formatter class must implement FormatterInterface, got %s', is_string($className) ? $className : gettype($className)),
+			);
+		}
 
 		return new $className();
 	}
