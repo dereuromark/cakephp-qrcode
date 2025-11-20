@@ -3,6 +3,7 @@
 namespace QrCode\Utility;
 
 use Cake\Routing\Router;
+use InvalidArgumentException;
 
 class Formatter implements FormatterInterface {
 
@@ -84,11 +85,17 @@ class Formatter implements FormatterInterface {
 					break;
 				case 'note':
 					$val = str_replace(';', ',', $val);
-					$res[] = 'NOTE:' . $val; //TODO: remove other invalid characters
+					// Escape vCard special characters
+					$val = addcslashes($val, "\n\r\\");
+					$val = str_replace(',', '\\,', $val);
+					$res[] = 'NOTE:' . $val;
 
 					break;
 				case 'birthday':
 					if (strlen($val) !== 8) {
+						if (strlen($val) < 10) {
+							throw new InvalidArgumentException('Invalid date format for birthday');
+						}
 						$val = substr($val, 0, 4) . substr($val, 6, 2) . substr($val, 10, 2);
 					}
 					$res[] = 'BDAY:' . $val;

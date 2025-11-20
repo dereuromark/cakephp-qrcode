@@ -8,6 +8,7 @@ use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\Output\QROutputInterface;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use InvalidArgumentException;
 use QrCode\Utility\Config;
 use QrCode\Utility\Formatter;
 use QrCode\Utility\FormatterInterface;
@@ -36,8 +37,13 @@ class QrCodeHelper extends Helper {
 	 * @return \QrCode\Utility\FormatterInterface
 	 */
 	public function formatter(): FormatterInterface {
-		/** @var class-string<FormatterInterface> $className */
 		$className = $this->getConfig('formatter');
+
+		if (!is_string($className) || !is_subclass_of($className, FormatterInterface::class)) {
+			throw new InvalidArgumentException(
+				sprintf('Formatter class must implement FormatterInterface, got %s', is_string($className) ? $className : gettype($className)),
+			);
+		}
 
 		return new $className();
 	}
@@ -55,7 +61,7 @@ class QrCodeHelper extends Helper {
 
 		$qrcode = (new QRCode(new QROptions($options)))->render($content);
 
-		return sprintf('<img src="%s" alt="QR Code">', $qrcode);
+		return sprintf('<img src="%s" alt="QR Code">', h($qrcode));
 	}
 
 	/**
@@ -71,7 +77,7 @@ class QrCodeHelper extends Helper {
 	public function svg(string $content, array $options = []): string {
 		$url = $this->Url->build(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => Config::TYPE_SVG, '?' => ['content' => $content] + $options]);
 
-		return sprintf('<img src="%s" alt="QR Code">', $url);
+		return sprintf('<img src="%s" alt="QR Code">', h($url));
 	}
 
 	/**
@@ -87,7 +93,7 @@ class QrCodeHelper extends Helper {
 	public function png(string $content, array $options = []): string {
 		$url = $this->Url->build(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => Config::TYPE_PNG, '?' => ['content' => $content] + $options]);
 
-		return sprintf('<img src="%s" alt="QR Code">', $url);
+		return sprintf('<img src="%s" alt="QR Code">', h($url));
 	}
 
 	/**
