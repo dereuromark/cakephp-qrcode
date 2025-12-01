@@ -1,7 +1,9 @@
 <?php
 
+use QrCode\Utility\Formatter;
+
 return [
 	'QrCode' => [
-		'formatter' => \QrCode\Utility\Formatter::class,
+		'formatter' => Formatter::class,
 	],
 ];

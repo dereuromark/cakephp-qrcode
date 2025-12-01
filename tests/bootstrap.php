@@ -7,6 +7,7 @@ use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
+use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\Router;
 use QrCode\QrCodePlugin;
 use TestApp\Controller\AppController;
@@ -82,7 +83,7 @@ Cache::setConfig($cache);
 class_alias(AppController::class, 'App\Controller\AppController');
 class_alias(AppView::class, 'App\View\AppView');
 
-Router::defaultRouteClass(\Cake\Routing\Route\DashedRoute::class);
+Router::defaultRouteClass(DashedRoute::class);
 Router::extensions(['svg', 'png']);
 
 Plugin::getCollection()->add(new QrCodePlugin());
