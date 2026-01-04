@@ -14,6 +14,26 @@ use QrCode\Utility\Formatter;
 use QrCode\Utility\FormatterInterface;
 
 /**
+ * QrCodeHelper - Generates QR code images in templates.
+ *
+ * Provides methods to generate QR codes as inline base64 images, SVG, or PNG.
+ * Uses chillerlan/php-qrcode library for generation.
+ *
+ * Usage:
+ * ```php
+ * // Inline base64 image
+ * echo $this->QrCode->image('https://example.com');
+ *
+ * // SVG from controller
+ * echo $this->QrCode->svg('https://example.com');
+ *
+ * // PNG from controller
+ * echo $this->QrCode->png('https://example.com');
+ * ```
+ *
+ * @author Mark Scherer
+ * @license MIT
+ *
  * @property \Cake\View\Helper\UrlHelper $Url
  */
 class QrCodeHelper extends Helper {
