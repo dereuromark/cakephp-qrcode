@@ -26,13 +26,13 @@
 		"source": "https://github.com/dereuromark/cakephp-qrcode/"
 	},
 	"require": {
-		"php": ">=8.1",
+		"php": ">=8.2",
 		"cakephp/cakephp": "^5.1.1",
 		"chillerlan/php-qrcode": "^5.0"
 	},
 	"require-dev": {
 		"fig-r/psr2r-sniffer": "dev-master",
-		"phpunit/phpunit": "^10.5 || ^11.5 || ^12.1"
+		"phpunit/phpunit": "^11.5 || ^12.1"
 	},
 	"autoload": {
 		"psr-4": {
