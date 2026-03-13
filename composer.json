@@ -5,7 +5,8 @@
 	"keywords": [
 		"cakephp",
 		"plugin",
-		"qr code"
+		"qr code",
+		"admin-panel"
 	],
 	"homepage": "https://github.com/dereuromark/cakephp-qrcode/",
 	"license": "MIT",
