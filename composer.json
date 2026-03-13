@@ -1,12 +1,15 @@
 {
 	"name": "dereuromark/cakephp-qrcode",
-	"description": "CakePHP QR Code Plugin",
+	"description": "A CakePHP plugin for generating QR codes with helper and admin backend",
 	"type": "cakephp-plugin",
 	"keywords": [
 		"cakephp",
 		"plugin",
 		"qr code",
-		"admin-panel"
+		"admin-panel",
+		"barcode",
+		"image",
+		"generator"
 	],
 	"homepage": "https://github.com/dereuromark/cakephp-qrcode/",
 	"license": "MIT",
