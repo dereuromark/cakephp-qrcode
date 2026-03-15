@@ -9,3 +9,4 @@
 /nbproject/
 /.idea/
 /.phpstorm.meta.php
+.phpcs.cache
