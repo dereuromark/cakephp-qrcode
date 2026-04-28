@@ -7,6 +7,7 @@
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-8892BF.svg)](https://php.net/)
 [![License](https://poser.pugx.org/dereuromark/cakephp-qrcode/license.png)](https://packagist.org/packages/dereuromark/cakephp-qrcode)
 [![Total Downloads](https://poser.pugx.org/dereuromark/cakephp-qrcode/d/total.svg)](https://packagist.org/packages/dereuromark/cakephp-qrcode)
+[![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-purple.svg?style=flat-square)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
 QrCode plugin for CakePHP applications.
 
