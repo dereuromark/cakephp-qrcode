@@ -6,8 +6,8 @@ namespace QrCode\Controller\Admin;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Http\Exception\BadRequestException;
-use chillerlan\QRCode\Output\QROutputInterface;
 use InvalidArgumentException;
+use QrCode\Lib\OutputType;
 use QrCode\Utility\Formatter;
 use QrCode\Utility\FormatterInterface;
 
@@ -40,7 +40,7 @@ class QrCodeController extends AppController {
 		$options = [];
 
 		if ($this->request->getParam('_ext') === 'png') {
-			$options['outputType'] = QROutputInterface::GDIMAGE_PNG;
+			$options = OutputType::apply($options, OutputType::PNG);
 		}
 
 		$this->set(compact('result', 'options'));

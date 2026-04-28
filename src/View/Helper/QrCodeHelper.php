@@ -5,10 +5,10 @@ namespace QrCode\View\Helper;
 use Cake\View\Helper;
 use chillerlan\QRCode\Common\EccLevel;
 use chillerlan\QRCode\Common\Version;
-use chillerlan\QRCode\Output\QROutputInterface;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use InvalidArgumentException;
+use QrCode\Lib\OutputType;
 use QrCode\Utility\Config;
 use QrCode\Utility\Formatter;
 use QrCode\Utility\FormatterInterface;
@@ -148,7 +148,7 @@ class QrCodeHelper extends Helper {
 		$options = $this->normalizeOptions($options);
 
 		$options['outputBase64'] = false;
-		$options['outputType'] = QROutputInterface::IMAGICK;
+		$options = OutputType::apply($options, OutputType::IMAGICK);
 		$options['returnResource'] = true;
 
 		return (new QRCode(new QROptions($options)))->render($content);
