@@ -64,7 +64,7 @@ class Formatter implements FormatterInterface {
 	 * @return string
 	 */
 	public function formatCard(array $content): string {
-		if (is_array($content['birthday'])) {
+		if (isset($content['birthday']) && is_array($content['birthday'])) {
 			$content['birthday'] = $content['birthday']['year'] . '-' . $content['birthday']['month'] . '-' . $content['birthday']['day'];
 		}
 
@@ -72,23 +72,19 @@ class Formatter implements FormatterInterface {
 		foreach ($content as $key => $val) {
 			switch ($key) {
 				case 'name':
-					$res[] = 'N:' . $val; # //TODO: support array
+					$res[] = 'N:' . $this->escapeMecard((string)$val);
 
 					break;
 				case 'nickname':
-					$res[] = 'NICKNAME:' . $val;
+					$res[] = 'NICKNAME:' . $this->escapeMecard((string)$val);
 
 					break;
 				case 'sound':
-					$res[] = 'SOUND:' . $val;
+					$res[] = 'SOUND:' . $this->escapeMecard((string)$val);
 
 					break;
 				case 'note':
-					$val = str_replace(';', ',', $val);
-					// Escape vCard special characters
-					$val = addcslashes($val, "\n\r\\");
-					$val = str_replace(',', '\\,', $val);
-					$res[] = 'NOTE:' . $val;
+					$res[] = 'NOTE:' . $this->escapeMecard((string)$val);
 
 					break;
 				case 'birthday':
@@ -104,49 +100,49 @@ class Formatter implements FormatterInterface {
 				case 'tel':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'TEL:' . $v;
+						$res[] = 'TEL:' . $this->escapeMecard((string)$v);
 					}
 
 					break;
 				case 'video':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'TEL-AV:' . $v;
+						$res[] = 'TEL-AV:' . $this->escapeMecard((string)$v);
 					}
 
 					break;
 				case 'address':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'ADR:' . $v; //TODO: reformat (array etc)
+						$res[] = 'ADR:' . $this->escapeMecard((string)$v);
 					}
 
 					break;
 				case 'org':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'ORG:' . $v;
+						$res[] = 'ORG:' . $this->escapeMecard((string)$v);
 					}
 
 					break;
 				case 'role':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'ROLE:' . $v;
+						$res[] = 'ROLE:' . $this->escapeMecard((string)$v);
 					}
 
 					break;
 				case 'email':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'EMAIL:' . $v;
+						$res[] = 'EMAIL:' . $this->escapeMecard((string)$v);
 					}
 
 					break;
 				case 'url':
 					$val = (array)$val;
 					foreach ($val as $v) {
-						$res[] = 'URL:' . Router::url($v, true);
+						$res[] = 'URL:' . $this->escapeMecard(Router::url($v, true));
 					}
 
 					break;
@@ -154,6 +150,24 @@ class Formatter implements FormatterInterface {
 		}
 
 		return 'MECARD:' . implode(';', $res) . ';';
+	}
+
+	/**
+	 * Escape MECARD/vCard reserved characters so a single field cannot break the payload.
+	 *
+	 * Backslash must be escaped first; afterwards `;`, `:`, `,` and CR/LF are escaped per the
+	 * MECARD spec so a field separator inside a value cannot truncate the rest of the card.
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	protected function escapeMecard(string $value): string {
+		return str_replace(
+			['\\', ';', ':', ',', "\r", "\n"],
+			['\\\\', '\\;', '\\:', '\\,', '', '\\n'],
+			$value,
+		);
 	}
 
 	/**

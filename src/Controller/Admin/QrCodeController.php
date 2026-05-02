@@ -14,13 +14,27 @@ use QrCode\Utility\FormatterInterface;
 class QrCodeController extends AppController {
 
 	/**
+	 * QR code max capacity (binary, byte mode) per the spec.
+	 *
+	 * @var int
+	 */
+	public const MAX_CONTENT_LENGTH = 2953;
+
+	/**
 	 * @return \Cake\Http\Response|null|void Renders view
 	 */
 	public function index() {
 		$result = null;
 		$options = [];
 		if ($this->request->is('post')) {
-			$result = $this->request->getData('content');
+			$content = $this->request->getData('content');
+			if (!is_string($content) || $content === '') {
+				throw new BadRequestException('Missing or invalid "content" parameter.');
+			}
+			if (strlen($content) > static::MAX_CONTENT_LENGTH) {
+				throw new BadRequestException('Content too long for QR code.');
+			}
+			$result = $content;
 		}
 
 		$this->set(compact('result', 'options'));
@@ -31,9 +45,11 @@ class QrCodeController extends AppController {
 	 */
 	public function image() {
 		$content = $this->request->getQuery('content');
-
-		if ($content && strlen($content) > 2953) { // QR code max capacity
-			throw new BadRequestException('Content too long for QR code');
+		if (!is_string($content) || $content === '') {
+			throw new BadRequestException('Missing or invalid "content" parameter.');
+		}
+		if (strlen($content) > static::MAX_CONTENT_LENGTH) {
+			throw new BadRequestException('Content too long for QR code.');
 		}
 
 		$result = $this->formatter()->formatText($content);
