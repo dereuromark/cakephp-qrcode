@@ -7,14 +7,14 @@
 ?>
 <nav class="actions large-3 medium-4 columns col-sm-4 col-xs-12" id="actions-sidebar">
     <ul class="side-nav nav nav-pills flex-column">
-        <li class="nav-item heading"><?= __('Actions') ?></li>
+        <li class="nav-item heading"><?= __d('qrcode', 'Actions') ?></li>
         <li class="nav-item">
         </li>
     </ul>
 </nav>
 <div class="qr-code index content large-9 medium-8 columns col-sm-8 col-12">
 
-    <h2><?= __('QR Codes') ?></h2>
+    <h2><?= __d('qrcode', 'QR Codes') ?></h2>
 
 	<p>By default, we render a simple SVG image that can be scaled up/down easily.</p>
 
@@ -36,7 +36,7 @@
 	echo $this->Form->control('content', ['autocomplete' => 'off', 'type' => 'textarea']);
 	?>
 	<div class="col-md-offset-2 col-md-6">
-		<?php echo $this->Form->button(__('Go'), ['class' => 'btn btn-success']);?>
+		<?php echo $this->Form->button(__d('qrcode', 'Go'), ['class' => 'btn btn-success']);?>
 	</div>
 	<?php echo $this->Form->end(); ?>
 
