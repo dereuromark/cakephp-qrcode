@@ -77,7 +77,7 @@ class QrCodeHelper extends Helper {
 	 * @return string
 	 */
 	public function image(string $content, array $options = []): string {
-		$options = $this->normalizeOptions($options);
+		$options = $this->normalizeOptions($options, $content);
 
 		$qrcode = (new QRCode(new QROptions($options)))->render($content);
 
@@ -127,7 +127,7 @@ class QrCodeHelper extends Helper {
 	 * @return string
 	 */
 	public function raw(string $content, array $options = []): string {
-		$options = $this->normalizeOptions($options);
+		$options = $this->normalizeOptions($options, $content);
 
 		$options['outputBase64'] = false;
 
@@ -145,7 +145,7 @@ class QrCodeHelper extends Helper {
 	 * @return object
 	 */
 	public function resource(string $content, array $options = []): object {
-		$options = $this->normalizeOptions($options);
+		$options = $this->normalizeOptions($options, $content);
 
 		$options['outputBase64'] = false;
 		$options = OutputType::apply($options, OutputType::IMAGICK);
@@ -156,17 +156,27 @@ class QrCodeHelper extends Helper {
 
 	/**
 	 * @param array<string, mixed> $options
+	 * @param string|null $content Optional payload — used to pick a payload-aware
+	 *     default ECC level. WiFi credentials, MECARD, and vCard payloads are
+	 *     routinely printed at small sizes or partially obscured by logos, so
+	 *     they default to level Q (~25% recovery) instead of the generic
+	 *     short-URL default L (~7%). Callers can always override by passing
+	 *     a `level` option, or set `QrCode.defaultLevel` in Configure.
 	 *
 	 * @return array<string, mixed>
 	 */
-	protected function normalizeOptions(array $options): array {
+	protected function normalizeOptions(array $options, ?string $content = null): array {
+		$defaultLevel = $this->getConfig('defaultLevel');
+		if ($defaultLevel === null) {
+			$defaultLevel = static::defaultLevelForPayload($content);
+		}
 		$options += [
 			'version' => Version::AUTO, // to avoid code length issues
 			'scale' => 3,
 			'margin' => 0,
 			'imageBase64' => true,
 			'transparent' => false,
-			'level' => 'L',
+			'level' => $defaultLevel,
 			'connectPaths' => true,
 		];
 
@@ -193,6 +203,35 @@ class QrCodeHelper extends Helper {
 		] + $options;
 
 		return $options;
+	}
+
+	/**
+	 * Pick a sensible default ECC level for a given payload. Short URLs and
+	 * plain text default to L (~7% recovery) for the densest possible code;
+	 * structured payloads commonly printed small or partially obscured by a
+	 * logo overlay (WiFi credentials, vCard/MECARD contact cards) default to
+	 * Q (~25% recovery) so a scanner can still read them through wear or a
+	 * centred logo. The payload prefix is the WiFi/MECARD/vCard standard
+	 * marker — anything else stays at L.
+	 *
+	 * @param string|null $content
+     *
+	 * @return string One of `L`, `M`, `Q`, `H`.
+	 */
+	public static function defaultLevelForPayload(?string $content): string {
+		if ($content === null) {
+			return 'L';
+		}
+		$prefix = strtoupper(substr($content, 0, 16));
+		if (
+			str_starts_with($prefix, 'WIFI:')
+			|| str_starts_with($prefix, 'MECARD:')
+			|| str_starts_with($prefix, 'BEGIN:VCARD')
+		) {
+			return 'Q';
+		}
+
+		return 'L';
 	}
 
 }

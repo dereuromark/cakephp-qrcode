@@ -201,4 +201,25 @@ class QrCodeHelperTest extends TestCase {
 		$this->assertStringContainsString('scale=5', $image);
 	}
 
+	/**
+	 * Payload-aware ECC defaults: short URLs and plain text stay at L for
+	 * density; WiFi credentials, MECARD and vCard bumps to Q so the code
+	 * stays scannable through wear or a logo overlay.
+	 *
+	 * @return void
+	 */
+	public function testDefaultLevelForPayload(): void {
+		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload('https://example.com'));
+		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload('plain text'));
+		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload(null));
+		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload(''));
+
+		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('WIFI:T:WPA;S:Home;P:pwd;;'));
+		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('MECARD:N:Doe,John;;'));
+		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload("BEGIN:VCARD\nVERSION:3.0\nFN:Doe"));
+
+		// Case-insensitive prefix match — readers don't care about case, neither do we.
+		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('wifi:T:WPA;S:Home;P:pwd;;'));
+	}
+
 }
