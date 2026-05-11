@@ -111,4 +111,80 @@ class FormatterTest extends TestCase {
 		$this->assertSame('MECARD:NOTE:Line1\\nLine2\\; with comma\\,;', $result);
 	}
 
+	/**
+	 * vCard 4.0 happy path: produces a CRLF-terminated payload wrapped
+	 * in BEGIN/END with VERSION:4.0 at the top. Same input shape as
+	 * formatCard() so callers can swap by changing method name only.
+	 *
+	 * @return void
+	 */
+	public function testFormatVcardBasicShape(): void {
+		$result = $this->formatter->formatVcard([
+			'name' => 'Doe John',
+			'tel' => '+49 30 12345',
+			'email' => 'doe@example.org',
+			'url' => 'https://example.org/~doe',
+		]);
+
+		$this->assertStringStartsWith("BEGIN:VCARD\r\nVERSION:4.0\r\n", $result);
+		$this->assertStringEndsWith("\r\nEND:VCARD\r\n", $result);
+		$this->assertStringContainsString("FN:Doe John\r\n", $result);
+		$this->assertStringContainsString("TEL:+49 30 12345\r\n", $result);
+		$this->assertStringContainsString("EMAIL:doe@example.org\r\n", $result);
+		$this->assertStringContainsString("URL:https://example.org/~doe\r\n", $result);
+	}
+
+	/**
+	 * Reserved-char escaping per RFC 6350 §3.4: `\` `,` `;` plus
+	 * newline normalization to literal `\n`. Backslash MUST be
+	 * escaped first (same trap as the WiFi/MECARD escapers).
+	 *
+	 * @return void
+	 */
+	public function testFormatVcardEscapesReservedChars(): void {
+		$result = $this->formatter->formatVcard([
+			'name' => 'Smith; John, Jr.',
+			'note' => "Line1\nLine2 with \\ backslash",
+		]);
+
+		$this->assertStringContainsString('FN:Smith\\; John\\, Jr.', $result);
+		$this->assertStringContainsString('NOTE:Line1\\nLine2 with \\\\ backslash', $result);
+	}
+
+	/**
+	 * Multiple values for tel/email/url each emit their own line.
+	 *
+	 * @return void
+	 */
+	public function testFormatVcardEmitsOneLinePerMultiValue(): void {
+		$result = $this->formatter->formatVcard([
+			'name' => 'Doe',
+			'tel' => ['+1 555 1', '+1 555 2'],
+			'email' => ['a@example.org', 'b@example.org'],
+		]);
+
+		$this->assertSame(2, substr_count($result, "\r\nTEL:"));
+		$this->assertSame(2, substr_count($result, "\r\nEMAIL:"));
+	}
+
+	/**
+	 * Birthday accepts both `YYYY-MM-DD` and the legacy 8-char `YYYYMMDD`
+	 * shape, matching what formatCard() already accepts.
+	 *
+	 * @return void
+	 */
+	public function testFormatVcardBirthdayShapes(): void {
+		$resultLong = $this->formatter->formatVcard([
+			'name' => 'Doe',
+			'birthday' => '1990-01-15',
+		]);
+		$this->assertStringContainsString("BDAY:19900115\r\n", $resultLong);
+
+		$resultShort = $this->formatter->formatVcard([
+			'name' => 'Doe',
+			'birthday' => '19900115',
+		]);
+		$this->assertStringContainsString("BDAY:19900115\r\n", $resultShort);
+	}
+
 }
