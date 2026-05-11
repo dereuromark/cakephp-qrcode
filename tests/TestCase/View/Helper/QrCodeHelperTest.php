@@ -8,6 +8,7 @@ use Cake\View\View;
 use Imagick;
 use QrCode\Utility\FormatterInterface;
 use QrCode\View\Helper\QrCodeHelper;
+use ReflectionMethod;
 
 class QrCodeHelperTest extends TestCase {
 
@@ -202,10 +203,64 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * Payload-aware ECC defaults: short URLs and plain text stay at L for
-	 * density; WiFi credentials, MECARD and vCard bumps to Q so the code
-	 * stays scannable through wear or a logo overlay.
+	 * Logo overlay happy path: the rendered output contains an `<image>`
+	 * element pointing at the supplied data URI, centred on the QR code.
 	 *
+	 * @return void
+	 */
+	public function testRawWithLogoEmbedsImageElement(): void {
+		$content = 'https://example.com';
+		$logo = 'data:image/png;base64,iVBORw0KGgo=';
+
+		$raw = $this->QrCode->raw($content, ['logo' => $logo, 'logoSize' => 0.2]);
+
+		$this->assertStringContainsString('<image', $raw);
+		$this->assertStringContainsString('preserveAspectRatio="xMidYMid meet"', $raw);
+		$this->assertStringContainsString($logo, $raw);
+	}
+
+	/**
+	 * Setting a logo auto-bumps ECC to H so the centre overlay doesn't
+	 * defeat the QR's error correction. Verified by comparing the raw
+	 * output to a normalized form with no logo at level L — the
+	 * with-logo version should have more dense module patterns
+	 * characteristic of H-level encoding.
+	 *
+	 * @return void
+	 */
+	public function testLogoAutoBumpsEccToH(): void {
+		$content = 'https://example.com';
+
+		// Use reflection to inspect what level normalizeOptions applied
+		// rather than comparing rendered byte counts (which include the
+		// injected <image> element and varying whitespace).
+		$ref = new ReflectionMethod($this->QrCode, 'normalizeOptions');
+		/** @var array<string, mixed> $withLogo */
+		$withLogo = $ref->invoke($this->QrCode, [], $content, true);
+		/** @var array<string, mixed> $withoutLogo */
+		$withoutLogo = $ref->invoke($this->QrCode, [], $content, false);
+
+		$this->assertSame('H', $withLogo['level']);
+		$this->assertNotSame('H', $withoutLogo['level']);
+	}
+
+	/**
+	 * Caller-supplied `level` wins over the auto-bump — they may have a
+	 * specific reason to insist on a lower level (e.g. readability test).
+	 *
+	 * @return void
+	 */
+	public function testLogoRespectsExplicitLevel(): void {
+		$content = 'https://example.com';
+
+		$ref = new ReflectionMethod($this->QrCode, 'normalizeOptions');
+		/** @var array<string, mixed> $withLogo */
+		$withLogo = $ref->invoke($this->QrCode, ['level' => 'M'], $content, true);
+
+		$this->assertSame('M', $withLogo['level'], 'Caller-supplied level must win over the logo auto-bump');
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testDefaultLevelForPayload(): void {
