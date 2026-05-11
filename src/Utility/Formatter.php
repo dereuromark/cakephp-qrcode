@@ -153,6 +153,161 @@ class Formatter implements FormatterInterface {
 	}
 
 	/**
+	 * Build an RFC 6350 vCard 4.0 payload from the same input shape
+	 * `formatCard()` accepts.
+	 *
+	 * vCard 4.0 is the IETF-blessed contact format and the one iOS
+	 * scanners increasingly prefer over MECARD (Apple silently drops
+	 * fields from MECARD payloads in some recent iOS versions). The
+	 * input shape mirrors `formatCard()` so callers can switch between
+	 * the two by changing the method name only.
+	 *
+	 * Reserved-character escaping per RFC 6350 §3.4: `\` → `\\`,
+	 * `,` → `\,`, `;` → `\;`, newlines → literal `\n`. Note that `:`
+	 * is NOT escaped in vCard (unlike MECARD) — the field separator
+	 * is the colon between key and value, and bare colons inside the
+	 * value are unambiguous.
+	 *
+	 * @param array<string, mixed> $content Same shape as `formatCard()`.
+	 *
+	 * @return string vCard 4.0 payload (CRLF-terminated per spec).
+	 */
+	public function formatVcard(array $content): string {
+		if (isset($content['birthday']) && is_array($content['birthday'])) {
+			$content['birthday'] = $content['birthday']['year'] . '-' . $content['birthday']['month'] . '-' . $content['birthday']['day'];
+		}
+
+		$lines = [
+			'BEGIN:VCARD',
+			'VERSION:4.0',
+		];
+
+		foreach ($content as $key => $val) {
+			switch ($key) {
+				case 'name':
+					$lines[] = 'FN:' . $this->escapeVcard((string)$val);
+
+					break;
+				case 'nickname':
+					$lines[] = 'NICKNAME:' . $this->escapeVcard((string)$val);
+
+					break;
+				case 'note':
+					$lines[] = 'NOTE:' . $this->escapeVcard((string)$val);
+
+					break;
+				case 'birthday':
+					$lines[] = 'BDAY:' . $this->normalizeBirthday((string)$val);
+
+					break;
+				case 'tel':
+					foreach ((array)$val as $v) {
+						$lines[] = 'TEL:' . $this->escapeVcard((string)$v);
+					}
+
+					break;
+				case 'video':
+					// No standard vCard equivalent for MECARD's TEL-AV; emit
+					// as a typed TEL with the closest match.
+					foreach ((array)$val as $v) {
+						$lines[] = 'TEL;TYPE=video:' . $this->escapeVcard((string)$v);
+					}
+
+					break;
+				case 'address':
+					foreach ((array)$val as $v) {
+						// vCard's structured ADR splits into 7 fields
+						// (po-box, ext, street, locality, region, postcode,
+						// country) but the input is a single string; emit
+						// the same single-string shape MECARD uses — the
+						// reader puts it in the "street" slot.
+						$lines[] = 'ADR:;;' . $this->escapeVcard((string)$v) . ';;;;';
+					}
+
+					break;
+				case 'org':
+					foreach ((array)$val as $v) {
+						$lines[] = 'ORG:' . $this->escapeVcard((string)$v);
+					}
+
+					break;
+				case 'role':
+					foreach ((array)$val as $v) {
+						$lines[] = 'ROLE:' . $this->escapeVcard((string)$v);
+					}
+
+					break;
+				case 'email':
+					foreach ((array)$val as $v) {
+						$lines[] = 'EMAIL:' . $this->escapeVcard((string)$v);
+					}
+
+					break;
+				case 'url':
+					foreach ((array)$val as $v) {
+						// `Router::url` is intentionally NOT applied to URLs
+						// inside a vCard value: contact cards typically embed
+						// canonical external URLs (a homepage, a LinkedIn
+						// profile) that shouldn't be rewritten against the
+						// emitting app's base URL.
+						$lines[] = 'URL:' . $this->escapeVcard((string)$v);
+					}
+
+					break;
+			}
+		}
+
+		$lines[] = 'END:VCARD';
+
+		// RFC 6350 §3.2: vCard lines MUST be terminated by CRLF. Tolerant
+		// scanners accept LF, but emitting strict CRLF here keeps the
+		// payload spec-conformant for the strict ones.
+		return implode("\r\n", $lines) . "\r\n";
+	}
+
+	/**
+	 * Normalize a date input to RFC 6350 birthday format `YYYYMMDD`.
+	 *
+	 * Accepts both the compressed form (`19900115`, 8 chars) and the
+	 * extended form (`1990-01-15`, 10 chars with separators). Anything
+	 * else throws so the caller knows to pre-format their input.
+	 *
+	 * @param string $value
+	 *
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return string
+	 */
+	protected function normalizeBirthday(string $value): string {
+		if (strlen($value) === 8 && ctype_digit($value)) {
+			return $value;
+		}
+		// Extended format: `YYYY-MM-DD` (chars 0-3, 5-6, 8-9).
+		if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $value, $matches) === 1) {
+			return $matches[1] . $matches[2] . $matches[3];
+		}
+
+		throw new InvalidArgumentException('Invalid date format for birthday');
+	}
+
+	/**
+	 * Escape vCard 4.0 reserved characters per RFC 6350 §3.4. Backslash
+	 * must be replaced first (same trap as the WiFi/MECARD escapers) so
+	 * subsequent rules don't double-escape it.
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	protected function escapeVcard(string $value): string {
+		return str_replace(
+			['\\', "\r\n", "\n", "\r", ',', ';'],
+			['\\\\', '\\n', '\\n', '\\n', '\\,', '\\;'],
+			$value,
+		);
+	}
+
+	/**
 	 * Escape MECARD/vCard reserved characters so a single field cannot break the payload.
 	 *
 	 * Backslash must be escaped first; afterwards `;`, `:`, `,` and CR/LF are escaped per the
