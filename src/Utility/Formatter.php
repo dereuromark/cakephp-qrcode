@@ -171,9 +171,17 @@ class Formatter implements FormatterInterface {
 	}
 
 	/**
+	 * Build a WiFi credential payload per the de-facto WiFi QR spec.
+	 *
+	 * SSID and password must escape the same set of reserved characters as
+	 * MECARD (`\`, `;`, `,`, `:`) plus `"` — otherwise an SSID containing `;`
+	 * truncates the rest of the payload and a password containing `\` corrupts
+	 * the credential on the scanning device. Without escaping, networks named
+	 * e.g. `Cafe;Free` simply will not connect from a scanned code.
+	 *
 	 * @param string $network
 	 * @param string $password
-	 * @param string|null $type
+	 * @param string|null $type Authentication type (`WPA`, `WEP`, `nopass`); defaults to `WPA`.
 	 *
 	 * @return string
 	 */
@@ -184,11 +192,29 @@ class Formatter implements FormatterInterface {
 
 		$options = [
 			'T:' . $type,
-			'S:' . $network,
-			'P:' . $password,
+			'S:' . $this->escapeWifi($network),
+			'P:' . $this->escapeWifi($password),
 		];
 
 		return 'WIFI:' . implode(';', $options) . ';;';
+	}
+
+	/**
+	 * Escape WiFi-QR reserved characters. Backslash must be escaped first
+	 * (otherwise the subsequent replacements double-escape it). The set is
+	 * `\` `;` `,` `:` `"` per the spec referenced by Android's documented
+	 * QR-WiFi handling.
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	protected function escapeWifi(string $value): string {
+		return str_replace(
+			['\\', ';', ',', ':', '"'],
+			['\\\\', '\\;', '\\,', '\\:', '\\"'],
+			$value,
+		);
 	}
 
 	/**

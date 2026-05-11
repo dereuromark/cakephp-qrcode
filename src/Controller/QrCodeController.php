@@ -22,7 +22,27 @@ class QrCodeController extends AppController {
 	}
 
 	/**
-	 * QR code max capacity (binary, byte mode) per the spec.
+	 * Byte-mode QR capacity at version 40, by ECC level (bytes).
+	 *
+	 * The previous `MAX_CONTENT_LENGTH = 2953` constant was the level-L cap.
+	 * Anyone bumping `level` to H got past the controller's length check but
+	 * then failed in the renderer with a less helpful error, since the real
+	 * cap at H is ~1273 bytes. The right ceiling is ECC-dependent.
+	 *
+	 * @var array<string, int>
+	 */
+	public const MAX_CONTENT_LENGTH_BY_LEVEL = [
+		'L' => 2953,
+		'M' => 2331,
+		'Q' => 1663,
+		'H' => 1273,
+	];
+
+	/**
+	 * Backward-compat alias for the L-level cap. Kept so apps that referenced
+	 * `QrCodeController::MAX_CONTENT_LENGTH` continue to compile; new code
+	 * should consult `MAX_CONTENT_LENGTH_BY_LEVEL` (or the public helper
+	 * `maxContentLengthForLevel()`) instead.
 	 *
 	 * @var int
 	 */
@@ -36,18 +56,54 @@ class QrCodeController extends AppController {
 		if (!is_string($content) || $content === '') {
 			throw new BadRequestException('Missing or invalid "content" parameter.');
 		}
-		if (strlen($content) > static::MAX_CONTENT_LENGTH) {
-			throw new BadRequestException('Content too long for QR code.');
+
+		$level = $this->resolveLevel($this->request->getQuery('level'));
+		$cap = static::maxContentLengthForLevel($level);
+		if (strlen($content) > $cap) {
+			throw new BadRequestException(sprintf(
+				'Content too long for QR code at ECC level %s (max %d bytes).',
+				$level,
+				$cap,
+			));
 		}
 
 		$result = $this->formatter()->formatText($content);
-		$options = [];
+		$options = ['level' => $level];
 
 		if ($this->request->getParam('_ext') === 'png') {
 			$options = OutputType::apply($options, OutputType::PNG);
 		}
 
 		$this->set(compact('result', 'options'));
+	}
+
+	/**
+	 * @param string $level
+     *
+	 * @return int
+	 */
+	public static function maxContentLengthForLevel(string $level): int {
+		return static::MAX_CONTENT_LENGTH_BY_LEVEL[$level] ?? static::MAX_CONTENT_LENGTH_BY_LEVEL['L'];
+	}
+
+	/**
+	 * Coerce a query-string level value to one of `L`, `M`, `Q`, `H`. Anything
+	 * else falls back to `L` so the cap stays generous and we don't surprise
+	 * callers who passed nothing at all.
+	 *
+	 * @param mixed $level
+     *
+	 * @return string
+	 */
+	protected function resolveLevel(mixed $level): string {
+		if (is_string($level)) {
+			$upper = strtoupper($level);
+			if (isset(static::MAX_CONTENT_LENGTH_BY_LEVEL[$upper])) {
+				return $upper;
+			}
+		}
+
+		return 'L';
 	}
 
 	/**

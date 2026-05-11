@@ -44,6 +44,31 @@ class FormatterTest extends TestCase {
 	}
 
 	/**
+	 * Regression: SSID containing `;` used to truncate the payload because
+	 * the formatter pasted it raw. The WiFi QR spec mandates backslash-
+	 * escaping `\`, `;`, `,`, `:`, and `"` in SSID and password.
+	 *
+	 * @return void
+	 */
+	public function testWifiEscapesReservedCharactersInSsidAndPassword(): void {
+		$result = $this->formatter->formatWifi('Cafe;Free', 'p\\ass:w,ord');
+		$this->assertSame('WIFI:T:WPA;S:Cafe\\;Free;P:p\\\\ass\\:w\\,ord;;', $result);
+	}
+
+	/**
+	 * Regression: backslash must be escaped before the other reserved chars,
+	 * otherwise a leading `\` gets double-escaped to `\\\\` (six chars) by
+	 * the subsequent rules. Verifies the ordering of `str_replace` args in
+	 * `escapeWifi()`.
+	 *
+	 * @return void
+	 */
+	public function testWifiBackslashIsEscapedExactlyOnce(): void {
+		$result = $this->formatter->formatWifi('A\\B', 'A\\B');
+		$this->assertSame('WIFI:T:WPA;S:A\\\\B;P:A\\\\B;;', $result);
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testFormatCardEscapesNameSeparator(): void {
