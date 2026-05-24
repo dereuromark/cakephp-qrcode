@@ -50,9 +50,9 @@ class QrCodeController extends AppController {
 	public const MAX_CONTENT_LENGTH = 2953;
 
 	/**
-	 * @return \Cake\Http\Response|null|void
-	 */
-	public function image() {
+     * @return Cake\Http\Response|null
+     */
+    public function image() {
 		$content = $this->request->getQuery('content');
 		if (!is_string($content) || $content === '') {
 			throw new BadRequestException('Missing or invalid "content" parameter.');
@@ -82,11 +82,12 @@ class QrCodeController extends AppController {
 		// + extension); a request that differs in any one of those gets a
 		// different ETag and a fresh render.
 		$cacheResponse = $this->applyHttpCache($content, $level);
-		if ($cacheResponse !== null) {
+		if ($cacheResponse instanceof \Cake\Http\Response) {
 			return $cacheResponse;
 		}
 
-		$this->set(compact('result', 'options'));
+		$this->set(['result' => $result, 'options' => $options]);
+        return null;
 	}
 
 	/**
