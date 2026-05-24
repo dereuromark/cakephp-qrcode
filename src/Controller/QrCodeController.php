@@ -50,8 +50,8 @@ class QrCodeController extends AppController {
 	public const MAX_CONTENT_LENGTH = 2953;
 
 	/**
-     * @return Cake\Http\Response|null
-     */
+	 * @return \Cake\Http\Response|null
+	 */
 	public function image() {
 		$content = $this->request->getQuery('content');
 		if (!is_string($content) || $content === '') {
