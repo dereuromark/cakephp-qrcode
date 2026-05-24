@@ -219,12 +219,12 @@ class QrCodeHelper extends Helper {
 			'level' => $defaultLevel,
 			'connectPaths' => true,
 		];
-        $options['eccLevel'] = match ($options['level']) {
-            'M' => EccLevel::M,
-            'Q' => EccLevel::Q,
-            'H' => EccLevel::H,
-            default => EccLevel::L,
-        };
+		$options['eccLevel'] = match ($options['level']) {
+			'M' => EccLevel::M,
+			'Q' => EccLevel::Q,
+			'H' => EccLevel::H,
+			default => EccLevel::L,
+		};
 
 		return [
 			'imageTransparent' => $options['transparent'],

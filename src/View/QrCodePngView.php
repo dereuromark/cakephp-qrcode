@@ -26,7 +26,7 @@ class QrCodePngView extends QrCodeView {
 
 		$response = $this->getResponse();
 		$responseType = $response->getHeaderLine('Content-Type');
-		if ($responseType === '' || str_starts_with((string) $responseType, 'text/html')) {
+		if ($responseType === '' || str_starts_with((string)$responseType, 'text/html')) {
 			$response = $response->withType($contentType);
 		}
 		$this->setResponse($response);
