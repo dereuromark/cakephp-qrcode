@@ -86,7 +86,7 @@ class QrCodeController extends AppController {
 			return $cacheResponse;
 		}
 
-		$this->set(['result' => $result, 'options' => $options]);
+		$this->set(compact('result', 'options'));
 
 		return null;
 	}

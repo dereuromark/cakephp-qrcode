@@ -37,7 +37,7 @@ class QrCodeController extends AppController {
 			$result = $content;
 		}
 
-		$this->set(['result' => $result, 'options' => $options]);
+		$this->set(compact('result', 'options'));
 	}
 
 	/**
@@ -59,7 +59,7 @@ class QrCodeController extends AppController {
 			$options = OutputType::apply($options, OutputType::PNG);
 		}
 
-		$this->set(['result' => $result, 'options' => $options]);
+		$this->set(compact('result', 'options'));
 	}
 
 	/**
