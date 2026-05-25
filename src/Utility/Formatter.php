@@ -88,13 +88,7 @@ class Formatter implements FormatterInterface {
 
 					break;
 				case 'birthday':
-					if (strlen($val) !== 8) {
-						if (strlen($val) < 10) {
-							throw new InvalidArgumentException('Invalid date format for birthday');
-						}
-						$val = substr($val, 0, 4) . substr($val, 6, 2) . substr($val, 10, 2);
-					}
-					$res[] = 'BDAY:' . $val;
+					$res[] = 'BDAY:' . $this->normalizeBirthday((string)$val);
 
 					break;
 				case 'tel':

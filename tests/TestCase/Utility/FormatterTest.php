@@ -112,6 +112,23 @@ class FormatterTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testFormatCardBirthdayShapes(): void {
+		$resultLong = $this->formatter->formatCard([
+			'name' => 'Doe',
+			'birthday' => '1990-01-15',
+		]);
+		$this->assertStringContainsString('BDAY:19900115;', $resultLong);
+
+		$resultShort = $this->formatter->formatCard([
+			'name' => 'Doe',
+			'birthday' => '19900115',
+		]);
+		$this->assertStringContainsString('BDAY:19900115;', $resultShort);
+	}
+
+	/**
 	 * vCard 4.0 happy path: produces a CRLF-terminated payload wrapped
 	 * in BEGIN/END with VERSION:4.0 at the top. Same input shape as
 	 * formatCard() so callers can swap by changing method name only.
