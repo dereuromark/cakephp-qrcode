@@ -1,7 +1,7 @@
 #  CakePHP QrCode Plugin
 
 [![CI](https://github.com/dereuromark/cakephp-qrcode/actions/workflows/ci.yml/badge.svg?branch=cake6)](https://github.com/dereuromark/cakephp-qrcode/actions?query=workflow%3ACI+branch%3Acake6)
-[![Coverage Status](https://img.shields.io/codecov/c/github/dereuromark/cakephp-qrcode/master.svg)](https://app.codecov.io/github/dereuromark/cakephp-qrcode/tree/master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/dereuromark/cakephp-qrcode/cake6.svg)](https://app.codecov.io/github/dereuromark/cakephp-qrcode/tree/master)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
 [![Latest Stable Version](https://poser.pugx.org/dereuromark/cakephp-qrcode/v/stable.svg)](https://packagist.org/packages/dereuromark/cakephp-qrcode)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.5-8892BF.svg)](https://php.net/)

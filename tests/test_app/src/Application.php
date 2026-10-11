@@ -40,7 +40,7 @@ class Application extends BaseApplication {
 		$routes->prefix('Admin', function (RouteBuilder $builder): void {
 			$builder->plugin(
 				'QrCode',
-					function (RouteBuilder $builder): void {
+				function (RouteBuilder $builder): void {
 					$builder->connect('/', ['controller' => 'QrCode', 'action' => 'index']);
 
 					$builder->fallbacks();

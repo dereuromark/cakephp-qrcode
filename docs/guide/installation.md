@@ -2,6 +2,8 @@
 
 Install the plugin in your CakePHP application:
 
+Before installing, allow development dependencies in your application's root `composer.json` with `"minimum-stability": "dev"` and `"prefer-stable": true`.
+
 ```sh
 composer require dereuromark/cakephp-qrcode:dev-cake6
 ```
