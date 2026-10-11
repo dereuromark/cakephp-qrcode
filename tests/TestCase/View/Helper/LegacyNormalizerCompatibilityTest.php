@@ -5,8 +5,8 @@ namespace QrCode\Test\TestCase\View\Helper;
 
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
-use QrCode\View\Helper\QrCodeHelper;
 use RuntimeException;
+use TestApp\View\Helper\LegacyNormalizerHelper;
 
 class LegacyNormalizerCompatibilityTest extends TestCase {
 
@@ -19,9 +19,10 @@ class LegacyNormalizerCompatibilityTest extends TestCase {
 
 		$this->assertStringStartsWith('<img src="data:image/svg+xml;base64,', $helper->image('Legacy image'));
 		$this->assertStringContainsString('<svg', $helper->raw('Legacy raw'));
-		$this->assertSame(['M', 'M'], $helper->observedLevels);
+		$helper->image('Custom logo level', ['logo' => 'data:image/png;base64,iVBORw0KGgo=']);
+		$this->assertSame(['M', 'M', 'M'], $helper->observedLevels);
 		$helper->image('Explicit level', ['level' => 'H']);
-		$this->assertSame('H', $helper->observedLevels[2]);
+		$this->assertSame('H', $helper->observedLevels[3]);
 	}
 
 	/**
@@ -55,40 +56,15 @@ class LegacyNormalizerCompatibilityTest extends TestCase {
 		$this->assertSame('L', $helper->defaultOptions()['level']);
 	}
 
-}
-
-class LegacyNormalizerHelper extends QrCodeHelper {
-
 	/**
-	 * @var list<string>
+	 * @return void
 	 */
-	public array $observedLevels = [];
-
-	public ?string $customLevel = null;
-
-	/**
-	 * @param array<string, mixed> $options Options
-     *
-	 * @return array<string, mixed>
-	 */
-	protected function normalizeOptions(array $options): array {
-		if (!empty($options['failNormalization'])) {
-			throw new RuntimeException('Custom normalization failed.');
-		}
-		if ($this->customLevel !== null) {
-			$options += ['level' => $this->customLevel];
-		}
-		$options = parent::normalizeOptions($options);
-		$this->observedLevels[] = $options['level'];
-
-		return $options;
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function defaultOptions(): array {
-		return $this->normalizeOptions([]);
+	public function testNestedRenderingRestoresOuterLogoDefaults(): void {
+		$helper = new LegacyNormalizerHelper(new View());
+		$helper->renderNested = true;
+		$this->assertStringStartsWith('<img ', $helper->image('Outer logo', ['logo' => 'data:image/png;base64,iVBORw0KGgo=']));
+		$this->assertSame(['Q', 'H'], $helper->observedLevels);
+		$this->assertSame('L', $helper->defaultOptions()['level']);
 	}
 
 }

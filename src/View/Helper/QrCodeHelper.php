@@ -238,7 +238,7 @@ class QrCodeHelper extends Helper {
 	 * @param array<string, mixed> $options Render options
 	 * @param string|null $content Payload
 	 * @param bool $hasLogo Whether a logo is overlaid
-     *
+	 *
 	 * @return array<string, mixed>
 	 */
 	private function normalizeRenderOptions(array $options, ?string $content, bool $hasLogo = false): array {
@@ -314,7 +314,7 @@ class QrCodeHelper extends Helper {
 	 * to `width` / `height` attributes, then to a sensible default.
 	 *
 	 * @param string $svg
-     *
+	 *
 	 * @return array{0: float, 1: float}
 	 */
 	protected function detectSvgDimensions(string $svg): array {
@@ -345,7 +345,7 @@ class QrCodeHelper extends Helper {
 	 *   a URL reference; the browser fetches it when it paints the SVG.
 	 *
 	 * @param string $logo
-     *
+	 *
 	 * @return string
 	 */
 	protected function logoToDataUri(string $logo): string {
@@ -377,7 +377,7 @@ class QrCodeHelper extends Helper {
 	 * Choose Q for WiFi and contact payloads, otherwise L.
 	 *
 	 * @param string|null $content
-     *
+	 *
 	 * @return string One of `L`, `M`, `Q`, `H`.
 	 */
 	public static function defaultLevelForPayload(?string $content): string {
