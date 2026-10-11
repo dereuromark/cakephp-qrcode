@@ -131,12 +131,17 @@ class QrCodeController extends AppController {
 	 * @return bool
 	 */
 	protected function matchesEtag(string $header, string $etag): bool {
-		foreach (explode(',', $header) as $candidate) {
+		if (trim($header) === '*') {
+			return true;
+		}
+		// Commas inside a quoted opaque tag do not separate validators.
+		$candidates = preg_split('/"[^"]*"(*SKIP)(*F)|,/', $header);
+		foreach ($candidates ?: [] as $candidate) {
 			$candidate = trim($candidate);
 			if (str_starts_with($candidate, 'W/')) {
 				$candidate = substr($candidate, 2);
 			}
-			if ($candidate === '*' || $candidate === $etag) {
+			if ($candidate === $etag) {
 				return true;
 			}
 		}

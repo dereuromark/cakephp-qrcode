@@ -228,7 +228,34 @@ class QrCodeControllerTest extends TestCase {
 		return [
 			'weak' => ['W/"' . sha1('Hello|L|svg') . '"'],
 			'list' => ['"another", "' . sha1('Hello|L|svg') . '"'],
+			'quoted comma before match' => ['"old,*,tag", "' . sha1('Hello|L|svg') . '"'],
 			'wildcard' => ['*'],
+		];
+	}
+
+	/**
+	 * @param string $header
+	 * @return void
+	 */
+	#[DataProvider('nonmatchingEtagHeaders')]
+	public function testImageRendersForUnmatchedQuotedConditionalHeaders(string $header): void {
+		$this->configRequest(['headers' => ['If-None-Match' => $header]]);
+		$this->get(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'svg', '?' => ['content' => 'Hello']]);
+
+		$this->assertResponseOk();
+		$this->assertContentType('image/svg+xml');
+		$this->assertResponseContains('<svg');
+	}
+
+	/**
+	 * @return array<string, array{string}>
+	 */
+	public static function nonmatchingEtagHeaders(): array {
+		return [
+			'comma and star inside opaque tag' => ['"old,*,tag"'],
+			'weak opaque tag' => ['W/"old,*,tag"'],
+			'quoted star' => ['"*"'],
+			'wildcard mixed with unmatched tag' => ['"old", *'],
 		];
 	}
 
