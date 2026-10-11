@@ -32,7 +32,7 @@
 	"require": {
 		"php": ">=8.5",
 		"cakephp/cakephp": "^6.0@dev",
-		"chillerlan/php-qrcode": "^5.0 || ^6.0"
+		"chillerlan/php-qrcode": "^6.0.1"
 	},
 	"require-dev": {
 		"dereuromark/cakephp-i18n-lint": "dev-cake6",
