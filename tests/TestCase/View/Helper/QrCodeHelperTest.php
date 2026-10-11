@@ -6,6 +6,7 @@ namespace QrCode\Test\TestCase\View\Helper;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Imagick;
+use QrCode\Lib\OutputType;
 use QrCode\Utility\FormatterInterface;
 use QrCode\View\Helper\QrCodeHelper;
 use ReflectionMethod;
@@ -200,6 +201,45 @@ class QrCodeHelperTest extends TestCase {
 		$content = 'Test';
 		$image = $this->QrCode->png($content, ['scale' => 5]);
 		$this->assertStringContainsString('scale=5', $image);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testImageWithLogoEmbedsImageElement(): void {
+		$logo = 'data:image/png;base64,iVBORw0KGgo=';
+		$image = $this->QrCode->image('https://example.com', ['logo' => $logo]);
+		preg_match('/src="data:image\/svg\+xml;base64,([^"]+)"/', $image, $matches);
+
+		$this->assertNotEmpty($matches);
+		$svg = base64_decode($matches[1], true);
+		$this->assertIsString($svg);
+		$this->assertStringContainsString('<image', $svg);
+		$this->assertStringContainsString($logo, $svg);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testPngImageWithUnsupportedLogoRemainsAnImage(): void {
+		$this->skipIf(!extension_loaded('gd'), 'GD not available');
+		$options = OutputType::apply(['logo' => 'data:image/png;base64,iVBORw0KGgo='], OutputType::PNG);
+		$image = $this->QrCode->image('https://example.com', $options);
+		preg_match('/src="data:image\/png;base64,([^"]+)"/', $image, $matches);
+
+		$this->assertNotEmpty($matches);
+		$png = base64_decode($matches[1], true);
+		$this->assertIsString($png);
+		$this->assertStringStartsWith("\x89PNG", $png);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testImageWrapsRawSvgInDataUri(): void {
+		$image = $this->QrCode->image('https://example.com', ['outputBase64' => false]);
+
+		$this->assertStringStartsWith('<img src="data:image/svg+xml;base64,', $image);
 	}
 
 	/**

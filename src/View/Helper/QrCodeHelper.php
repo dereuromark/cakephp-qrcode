@@ -87,18 +87,28 @@ class QrCodeHelper extends Helper {
 		// to a non-base64 stream so we can post-process the SVG to inject
 		// the logo element. Re-encode at the end so the returned data URI
 		// is still drop-in for `<img src="...">`.
-		$wantsBase64 = (bool)($options['imageBase64'] ?? true);
 		if ($logo !== null) {
-			$options['imageBase64'] = false;
+			$options['outputBase64'] = false;
 		}
 
 		$qrcode = (new QRCode(new QROptions($options)))->render($content);
 
 		if ($logo !== null) {
 			$qrcode = $this->overlayLogo($qrcode, $logo, $logoSize);
-			if ($wantsBase64 && str_contains($qrcode, '<svg ')) {
-				$qrcode = 'data:image/svg+xml;base64,' . base64_encode($qrcode);
+
+		}
+
+		if (!str_starts_with($qrcode, 'data:')) {
+			if (str_contains($qrcode, '<svg ')) {
+				$mime = 'image/svg+xml';
+			} else {
+				$imageInfo = @getimagesizefromstring($qrcode);
+				if ($imageInfo === false) {
+					throw new InvalidArgumentException('The image helper requires SVG or raster image output.');
+				}
+				$mime = $imageInfo['mime'];
 			}
+			$qrcode = 'data:' . $mime . ';base64,' . base64_encode($qrcode);
 		}
 
 		return sprintf('<img src="%s" alt="QR Code">', h($qrcode));
@@ -189,7 +199,7 @@ class QrCodeHelper extends Helper {
 	 *     routinely printed at small sizes or partially obscured by logos, so
 	 *     they default to level Q (~25% recovery) instead of the generic
 	 *     short-URL default L (~7%). Callers can always override by passing
-	 *     a `level` option, or set `QrCode.defaultLevel` in Configure.
+	 *     a `level` option, or set the helper’s `defaultLevel` configuration.
 	 * @param bool $hasLogo When true, auto-bump default level to H so the
 	 *     centre overlay doesn't defeat error correction. Explicit
 	 *     caller-supplied `level` still wins.
@@ -214,7 +224,7 @@ class QrCodeHelper extends Helper {
 			'version' => Version::AUTO, // to avoid code length issues
 			'scale' => 3,
 			'margin' => 0,
-			'imageBase64' => true,
+			'outputBase64' => true,
 			'transparent' => false,
 			'level' => $defaultLevel,
 			'connectPaths' => true,

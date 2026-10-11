@@ -53,6 +53,8 @@ class QrCodeController extends AppController {
 	 * @return \Cake\Http\Response|null
 	 */
 	public function image() {
+		$this->request->allowMethod(['get', 'head']);
+
 		$content = $this->request->getQuery('content');
 		if (!is_string($content) || $content === '') {
 			throw new BadRequestException('Missing or invalid "content" parameter.');
@@ -109,7 +111,7 @@ class QrCodeController extends AppController {
 		$etag = '"' . sha1($content . '|' . $level . '|' . $ext) . '"';
 
 		$ifNoneMatch = (string)$this->request->getHeaderLine('If-None-Match');
-		if ($ifNoneMatch !== '' && $ifNoneMatch === $etag) {
+		if ($this->matchesEtag($ifNoneMatch, $etag)) {
 			// The 304 path doesn't render a body. Browsers and CDNs use the
 			// previously-cached response. `Cache-Control` is repeated so a
 			// proxy that revalidates also picks up the same TTL.
@@ -126,6 +128,26 @@ class QrCodeController extends AppController {
 			->withHeader('Cache-Control', $this->cacheControlHeader());
 
 		return null;
+	}
+
+	/**
+	 * @param string $header
+	 * @param string $etag
+     *
+	 * @return bool
+	 */
+	protected function matchesEtag(string $header, string $etag): bool {
+		foreach (explode(',', $header) as $candidate) {
+			$candidate = trim($candidate);
+			if (str_starts_with($candidate, 'W/')) {
+				$candidate = substr($candidate, 2);
+			}
+			if ($candidate === '*' || $candidate === $etag) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
