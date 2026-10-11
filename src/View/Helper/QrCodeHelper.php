@@ -39,6 +39,11 @@ use QrCode\Utility\FormatterInterface;
 class QrCodeHelper extends Helper {
 
 	/**
+	 * @var array{content: string|null, hasLogo: bool}
+	 */
+	private array $renderContext = ['content' => null, 'hasLogo' => false];
+
+	/**
 	 * @var array<int|string, array<string, mixed>|string>
 	 */
 	protected array $helpers = [
@@ -81,7 +86,7 @@ class QrCodeHelper extends Helper {
 		$logoSize = (float)($options['logoSize'] ?? 0.2);
 		unset($options['logo'], $options['logoSize']);
 
-		$options = $this->normalizeOptions($options, $content, hasLogo: $logo !== null);
+		$options = $this->normalizeRenderOptions($options, $content, hasLogo: $logo !== null);
 
 		// When a logo overlays the centre of the QR code we need to render
 		// to a non-base64 stream so we can post-process the SVG to inject
@@ -161,7 +166,7 @@ class QrCodeHelper extends Helper {
 		$logoSize = (float)($options['logoSize'] ?? 0.2);
 		unset($options['logo'], $options['logoSize']);
 
-		$options = $this->normalizeOptions($options, $content, hasLogo: $logo !== null);
+		$options = $this->normalizeRenderOptions($options, $content, hasLogo: $logo !== null);
 		$options['outputBase64'] = false;
 
 		$qrcode = (new QRCode(new QROptions($options)))->render($content);
@@ -183,7 +188,7 @@ class QrCodeHelper extends Helper {
 	 * @return object
 	 */
 	public function resource(string $content, array $options = []): object {
-		$options = $this->normalizeOptions($options, $content);
+		$options = $this->normalizeRenderOptions($options, $content);
 
 		$options['outputBase64'] = false;
 		$options = OutputType::apply($options, OutputType::IMAGICK);
@@ -194,19 +199,17 @@ class QrCodeHelper extends Helper {
 
 	/**
 	 * @param array<string, mixed> $options
-	 * @param string|null $content Payload used to choose L or Q when no default is configured.
-	 * @param bool $hasLogo Select H unless the caller supplies a level.
 	 *
 	 * @return array<string, mixed>
 	 */
-	protected function normalizeOptions(array $options, ?string $content = null, bool $hasLogo = false): array {
+	protected function normalizeOptions(array $options): array {
 		$callerSetLevel = isset($options['level']);
 		$defaultLevel = $this->getConfig('defaultLevel');
 		if ($defaultLevel === null) {
-			$defaultLevel = static::defaultLevelForPayload($content);
+			$defaultLevel = static::defaultLevelForPayload($this->renderContext['content']);
 		}
 		// Prefer H for a logo; an explicit per-call level takes precedence.
-		if ($hasLogo && !$callerSetLevel) {
+		if ($this->renderContext['hasLogo'] && !$callerSetLevel) {
 			$defaultLevel = 'H';
 		}
 		$options += [
@@ -229,6 +232,23 @@ class QrCodeHelper extends Helper {
 			'imageTransparent' => $options['transparent'],
 			'addQuietzone' => $options['margin'] > 0,
 		] + $options;
+	}
+
+	/**
+	 * @param array<string, mixed> $options Render options
+	 * @param string|null $content Payload
+	 * @param bool $hasLogo Whether a logo is overlaid
+     *
+	 * @return array<string, mixed>
+	 */
+	private function normalizeRenderOptions(array $options, ?string $content, bool $hasLogo = false): array {
+		$previous = $this->renderContext;
+		$this->renderContext = ['content' => $content, 'hasLogo' => $hasLogo];
+		try {
+			return $this->normalizeOptions($options);
+		} finally {
+			$this->renderContext = $previous;
+		}
 	}
 
 	/**

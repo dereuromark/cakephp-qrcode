@@ -11,16 +11,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * QrCode\Controller\QrCodeController Test Case
- *
- * @uses \QrCode\Controller\QrCodeController
  */
 class QrCodeControllerTest extends TestCase {
 
 	use IntegrationTestTrait;
 
 	/**
-	 * @uses \QrCode\Controller\QrCodeController::image()
-	 *
 	 * @return void
 	 */
 	public function testImage(): void {

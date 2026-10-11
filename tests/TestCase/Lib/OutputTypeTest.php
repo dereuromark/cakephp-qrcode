@@ -14,9 +14,6 @@ use Imagick;
 use InvalidArgumentException;
 use QrCode\Lib\OutputType;
 
-/**
- * @uses \QrCode\Lib\OutputType
- */
 class OutputTypeTest extends TestCase {
 
 	/**

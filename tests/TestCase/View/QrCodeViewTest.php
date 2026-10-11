@@ -9,9 +9,6 @@ use Cake\Http\ServerRequest;
 use Cake\TestSuite\TestCase;
 use QrCode\View\QrCodeView;
 
-/**
- * @uses \QrCode\View\QrCodeView
- */
 class QrCodeViewTest extends TestCase {
 
 	/**
