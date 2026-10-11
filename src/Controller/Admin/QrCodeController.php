@@ -10,8 +10,21 @@ use InvalidArgumentException;
 use QrCode\Lib\OutputType;
 use QrCode\Utility\Formatter;
 use QrCode\Utility\FormatterInterface;
+use QrCode\View\QrCodePngView;
+use QrCode\View\QrCodeView;
 
 class QrCodeController extends AppController {
+
+	/**
+	 * @return string[]
+	 */
+	public function viewClasses(): array {
+		if ($this->request->getParam('action') !== 'image') {
+			return parent::viewClasses();
+		}
+
+		return [QrCodeView::class, QrCodePngView::class];
+	}
 
 	/**
 	 * QR code max capacity (binary, byte mode) per the spec.

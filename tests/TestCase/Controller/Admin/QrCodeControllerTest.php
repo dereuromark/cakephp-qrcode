@@ -6,6 +6,8 @@ namespace QrCode\Test\TestCase\Controller\Admin;
 use Cake\Http\Exception\BadRequestException;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
+use chillerlan\QRCode\QRCode;
+use DOMDocument;
 
 /**
  * @uses \QrCode\Controller\Admin\QrCodeController
@@ -31,6 +33,7 @@ class QrCodeControllerTest extends TestCase {
 		$this->get(['prefix' => 'Admin', 'plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'index']);
 
 		$this->assertResponseOk();
+		$this->assertContentType('text/html');
 	}
 
 	/**
@@ -65,6 +68,24 @@ class QrCodeControllerTest extends TestCase {
 		$this->get(['prefix' => 'Admin', 'plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'svg', '?' => ['content' => 'Foo Bar']]);
 
 		$this->assertResponseOk();
+		$this->assertContentType('image/svg+xml');
+		$document = new DOMDocument();
+		$this->assertTrue($document->loadXML((string)$this->_response->getBody()));
+		$this->assertSame('svg', $document->documentElement->localName);
+
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testImagePngReturnsDecodableImage(): void {
+		$this->skipIf(!extension_loaded('gd'), 'GD is required for PNG output');
+		$this->get(['prefix' => 'Admin', 'plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'png', '?' => ['content' => 'Foo Bar']]);
+
+		$this->assertResponseOk();
+		$this->assertContentType('image/png');
+		$decoded = (new QRCode())->readFromBlob((string)$this->_response->getBody());
+		$this->assertSame('Foo Bar', (string)$decoded);
 	}
 
 	/**

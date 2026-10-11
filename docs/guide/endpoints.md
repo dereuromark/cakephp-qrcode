@@ -18,7 +18,7 @@ echo $this->QrCode->svg('https://example.com/about', ['level' => 'M']);
 echo $this->QrCode->png('https://example.com/about', ['level' => 'M']);
 ```
 
-The default public URL is `/qr-code/qr-code/image.svg?content=...`, or the equivalent `.png` URL.
+With the standard application `DashedRoute` class, the public URL is `/qr-code/qr-code/image.svg?content=...`, or the equivalent `.png` URL.
 The public action accepts GET and HEAD. `content` must be a nonempty string; `0` is valid.
 Only the `level` rendering option is read from the query string. Inline options such as `logo`, `scale` and `margin` do not configure this action.
 The public action defaults to level L, including for structured payloads.

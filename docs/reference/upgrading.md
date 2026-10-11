@@ -9,6 +9,9 @@ Configure `defaultLevel` on the helper rather than as a global `QrCode.defaultLe
 A per-call level takes precedence over the automatic H level for logos.
 Controller image options are limited to the documented query parameters; advanced inline options do not become controller options automatically.
 
+The public image action now accepts only GET and HEAD; other methods return 405.
+`image()` rejects non-image output with `InvalidArgumentException` instead of returning an invalid HTML image.
+
 ## Development
 
 ```sh

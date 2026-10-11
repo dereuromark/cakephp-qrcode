@@ -77,12 +77,7 @@ class QrCodeController extends AppController {
 			$options = OutputType::apply($options, OutputType::PNG);
 		}
 
-		// Pure function of (content, options, ext) — identical inputs always
-		// produce identical bytes, so we can serve aggressive cache headers
-		// and short-circuit on a matching If-None-Match. The ETag is a hash
-		// of everything that affects the rendered payload (content + level
-		// + extension); a request that differs in any one of those gets a
-		// different ETag and a fresh render.
+		// Validate the request identity before rendering the image.
 		$cacheResponse = $this->applyHttpCache($content, $level);
 		if ($cacheResponse instanceof Response) {
 			return $cacheResponse;
@@ -94,12 +89,11 @@ class QrCodeController extends AppController {
 	}
 
 	/**
-	 * Set strong `Cache-Control` + `ETag` headers on the response, and return
-	 * a 304 short-circuit if the client already has the same ETag.
+	 * Set cache headers and return a 304 response for matching validators.
 	 *
-	 * Returned `null` means we filled in the headers but didn't short-circuit
-	 * — the caller continues with the normal view render. A non-null return
-	 * is a complete 304 response the caller must return as-is.
+	 * The ETag identifies input content, level and extension; it does not hash
+	 * rendered bytes or include custom formatter and library settings.
+	 * A null return lets the caller continue rendering.
 	 *
 	 * @param string $content Raw payload going into the QR code.
 	 * @param string $level Resolved ECC level.
@@ -151,11 +145,9 @@ class QrCodeController extends AppController {
 	}
 
 	/**
-	 * Cache-Control value applied to all rendered QR codes.
+	 * Cache-Control value applied to public image responses.
 	 *
-	 * Default is `public, max-age=31536000, immutable` — one year, immutable
-	 * because the content is keyed by hash. Apps with a different policy can
-	 * override via `Configure::write('QrCode.cacheControl', '...')`.
+	 * Override the default through the QrCode.cacheControl configuration.
 	 *
 	 * @return string
 	 */

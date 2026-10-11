@@ -164,7 +164,7 @@ class QrCodeControllerTest extends TestCase {
 	public function testImageReturns304WhenIfNoneMatchHits(): void {
 		$this->session(['Auth' => ['User' => ['id' => 1]]]);
 
-		$etag = '"b27602a2a5c8aad2a83cc60ab9a91812cf526103"';
+		$etag = '"' . sha1('Hello|L|svg') . '"';
 		$this->configRequest(['headers' => ['If-None-Match' => $etag]]);
 		$this->get([
 			'plugin' => 'QrCode',
@@ -189,7 +189,7 @@ class QrCodeControllerTest extends TestCase {
 	public function testImageEtagDiffersForDifferentContent(): void {
 		$this->session(['Auth' => ['User' => ['id' => 1]]]);
 
-		$first = '"b27602a2a5c8aad2a83cc60ab9a91812cf526103"';
+		$first = '"' . sha1('Hello|L|svg') . '"';
 		$this->configRequest(['headers' => ['If-None-Match' => $first]]);
 
 		$this->get([
@@ -200,6 +200,7 @@ class QrCodeControllerTest extends TestCase {
 			'?' => ['content' => 'second'],
 		]);
 		$second = $this->_response->getHeaderLine('ETag');
+		$this->assertSame('"' . sha1('second|L|svg') . '"', $second);
 
 		$this->assertResponseOk();
 		$this->assertNotSame($first, $second);
@@ -225,8 +226,8 @@ class QrCodeControllerTest extends TestCase {
 	 */
 	public static function matchingEtagHeaders(): array {
 		return [
-			'weak' => ['W/"b27602a2a5c8aad2a83cc60ab9a91812cf526103"'],
-			'list' => ['"another", "b27602a2a5c8aad2a83cc60ab9a91812cf526103"'],
+			'weak' => ['W/"' . sha1('Hello|L|svg') . '"'],
+			'list' => ['"another", "' . sha1('Hello|L|svg') . '"'],
 			'wildcard' => ['*'],
 		];
 	}
