@@ -11,35 +11,17 @@
 
 QrCode plugin for CakePHP applications.
 
-This branch is for use with **CakePHP 5.1+**. For details see [version map](https://github.com/dereuromark/cakephp-qrcode/wiki#cakephp-version-map).
+The plugin wraps [chillerlan/php-qrcode](https://github.com/chillerlan/php-qrcode) with a CakePHP helper, payload formatters and optional SVG/PNG endpoints.
 
-## Motivation
+Read the **[documentation website](https://dereuromark.github.io/cakephp-qrcode/)**:
 
-Wraps [chillerlan/php-qrcode/](https://github.com/chillerlan/php-qrcode/) library to have an easy to use
-out-of-the-box interface for most common QR codes.
+- [Installation](https://dereuromark.github.io/cakephp-qrcode/guide/installation)
+- [Getting started](https://dereuromark.github.io/cakephp-qrcode/guide/getting-started)
+- [Helper options](https://dereuromark.github.io/cakephp-qrcode/reference/helper)
+- [QR library manual](https://php-qrcode.readthedocs.io/en/v6.0.x/)
 
-## Features
-
-Supports:
-- base64encoded (default)
-- svg/png as controller action generated on-the-fly image
-
-## Install/Setup
-Installing the Plugin is pretty much as with every other CakePHP Plugin.
-
-Install using Packagist/Composer:
-```
-composer require dereuromark/cakephp-qrcode
-```
-
-The following command can enable the plugin:
-```
-bin/cake plugin load QrCode
-```
-or manually add it to your `Application` class.
-
-### Usage
-See the **[Docs](docs/README.md)** for details.
+For older CakePHP versions, see the [version map](https://github.com/dereuromark/cakephp-qrcode/wiki#cakephp-version-map).
 
 ## Demo
-See https://sandbox.dereuromark.de/sandbox/qr-code-examples
+
+[QrCode examples in the sandbox](https://sandbox.dereuromark.de/sandbox/qr-code-examples).

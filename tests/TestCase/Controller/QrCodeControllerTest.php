@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace QrCode\Test\TestCase\Controller;
 
 use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * QrCode\Controller\QrCodeController Test Case
@@ -162,18 +164,7 @@ class QrCodeControllerTest extends TestCase {
 	public function testImageReturns304WhenIfNoneMatchHits(): void {
 		$this->session(['Auth' => ['User' => ['id' => 1]]]);
 
-		// First request: capture the ETag.
-		$this->get([
-			'plugin' => 'QrCode',
-			'controller' => 'QrCode',
-			'action' => 'image',
-			'_ext' => 'svg',
-			'?' => ['content' => 'Hello'],
-		]);
-		$etag = $this->_response->getHeaderLine('ETag');
-		$this->assertNotEmpty($etag);
-
-		// Replay with If-None-Match — should 304.
+		$etag = '"' . sha1('Hello|L|svg') . '"';
 		$this->configRequest(['headers' => ['If-None-Match' => $etag]]);
 		$this->get([
 			'plugin' => 'QrCode',
@@ -198,14 +189,8 @@ class QrCodeControllerTest extends TestCase {
 	public function testImageEtagDiffersForDifferentContent(): void {
 		$this->session(['Auth' => ['User' => ['id' => 1]]]);
 
-		$this->get([
-			'plugin' => 'QrCode',
-			'controller' => 'QrCode',
-			'action' => 'image',
-			'_ext' => 'svg',
-			'?' => ['content' => 'first'],
-		]);
-		$first = $this->_response->getHeaderLine('ETag');
+		$first = '"' . sha1('Hello|L|svg') . '"';
+		$this->configRequest(['headers' => ['If-None-Match' => $first]]);
 
 		$this->get([
 			'plugin' => 'QrCode',
@@ -215,9 +200,75 @@ class QrCodeControllerTest extends TestCase {
 			'?' => ['content' => 'second'],
 		]);
 		$second = $this->_response->getHeaderLine('ETag');
+		$this->assertSame('"' . sha1('second|L|svg') . '"', $second);
 
-		$this->assertNotEmpty($first);
+		$this->assertResponseOk();
 		$this->assertNotSame($first, $second);
+	}
+
+	/**
+	 * @param string $header
+     *
+	 * @return void
+	 */
+	#[DataProvider('matchingEtagHeaders')]
+	public function testImageAcceptsMatchingConditionalHeaders(string $header): void {
+		$this->session(['Auth' => ['User' => ['id' => 1]]]);
+		$this->configRequest(['headers' => ['If-None-Match' => $header]]);
+		$this->get(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'svg', '?' => ['content' => 'Hello']]);
+
+		$this->assertResponseCode(304);
+		$this->assertSame('', (string)$this->_response->getBody());
+	}
+
+	/**
+	 * @return array<string, array{string}>
+	 */
+	public static function matchingEtagHeaders(): array {
+		return [
+			'weak' => ['W/"' . sha1('Hello|L|svg') . '"'],
+			'list' => ['"another", "' . sha1('Hello|L|svg') . '"'],
+			'quoted comma before match' => ['"old,*,tag", "' . sha1('Hello|L|svg') . '"'],
+			'wildcard' => ['*'],
+		];
+	}
+
+	/**
+	 * @param string $header
+     *
+	 * @return void
+	 */
+	#[DataProvider('nonmatchingEtagHeaders')]
+	public function testImageRendersForUnmatchedQuotedConditionalHeaders(string $header): void {
+		$this->configRequest(['headers' => ['If-None-Match' => $header]]);
+		$this->get(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'svg', '?' => ['content' => 'Hello']]);
+
+		$this->assertResponseOk();
+		$this->assertContentType('image/svg+xml');
+		$this->assertResponseContains('<svg');
+	}
+
+	/**
+	 * @return array<string, array{string}>
+	 */
+	public static function nonmatchingEtagHeaders(): array {
+		return [
+			'comma and star inside opaque tag' => ['"old,*,tag"'],
+			'weak opaque tag' => ['W/"old,*,tag"'],
+			'quoted star' => ['"*"'],
+			'wildcard mixed with unmatched tag' => ['"old", *'],
+		];
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testImageRejectsPost(): void {
+		$this->disableErrorHandlerMiddleware();
+		$this->expectException(MethodNotAllowedException::class);
+		$this->session(['Auth' => ['User' => ['id' => 1]]]);
+
+		$this->post(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'svg', '?' => ['content' => 'Hello']]);
 	}
 
 	/**

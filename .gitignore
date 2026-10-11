@@ -10,3 +10,8 @@
 /.idea/
 /.phpstorm.meta.php
 .phpcs.cache
+
+/.phpunit.cache/
+/docs/node_modules/
+/docs/.vitepress/cache/
+/docs/.vitepress/dist/

@@ -147,20 +147,10 @@ class Formatter implements FormatterInterface {
 	}
 
 	/**
-	 * Build an RFC 6350 vCard 4.0 payload from the same input shape
-	 * `formatCard()` accepts.
+	 * Build a contact payload with vCard 4.0 headers and escaping.
 	 *
-	 * vCard 4.0 is the IETF-blessed contact format and the one iOS
-	 * scanners increasingly prefer over MECARD (Apple silently drops
-	 * fields from MECARD payloads in some recent iOS versions). The
-	 * input shape mirrors `formatCard()` so callers can switch between
-	 * the two by changing the method name only.
-	 *
-	 * Reserved-character escaping per RFC 6350 §3.4: `\` → `\\`,
-	 * `,` → `\,`, `;` → `\;`, newlines → literal `\n`. Note that `:`
-	 * is NOT escaped in vCard (unlike MECARD) — the field separator
-	 * is the colon between key and value, and bare colons inside the
-	 * value are unambiguous.
+	 * Supports the fields documented for formatCard(), except sound.
+	 * Does not validate required fields or fold long lines.
 	 *
 	 * @param array<string, mixed> $content Same shape as `formatCard()`.
 	 *
@@ -253,9 +243,7 @@ class Formatter implements FormatterInterface {
 
 		$lines[] = 'END:VCARD';
 
-		// RFC 6350 §3.2: vCard lines MUST be terminated by CRLF. Tolerant
-		// scanners accept LF, but emitting strict CRLF here keeps the
-		// payload spec-conformant for the strict ones.
+		// Separate vCard lines with CRLF.
 		return implode("\r\n", $lines) . "\r\n";
 	}
 

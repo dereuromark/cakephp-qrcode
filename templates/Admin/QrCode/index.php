@@ -20,7 +20,7 @@
 
 	<div class="col-md-6" style="margin-bottom: 16px;">
 		<?php
-		if ($result) {
+		if ($result !== null) {
 			echo '<h4>Result</h4>';
 			echo $this->QrCode->image($result, $options);
 		}
