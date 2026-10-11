@@ -11,6 +11,7 @@ use QrCode\Lib\OutputType;
 use QrCode\Utility\FormatterInterface;
 use QrCode\View\Helper\QrCodeHelper;
 use ReflectionMethod;
+use TestApp\View\Helper\LegacyNormalizerHelper;
 
 class QrCodeHelperTest extends TestCase {
 
@@ -256,9 +257,9 @@ class QrCodeHelperTest extends TestCase {
 		// injected <image> element and varying whitespace).
 		$ref = new ReflectionMethod($this->QrCode, 'normalizeRenderOptions');
 		/** @var array<string, mixed> $withLogo */
-		$withLogo = $ref->invoke($this->QrCode, [], $content, true);
+		$withLogo = $ref->invoke($this->QrCode, [], true);
 		/** @var array<string, mixed> $withoutLogo */
-		$withoutLogo = $ref->invoke($this->QrCode, [], $content, false);
+		$withoutLogo = $ref->invoke($this->QrCode, [], false);
 
 		$this->assertSame('H', $withLogo['level']);
 		$this->assertNotSame('H', $withoutLogo['level']);
@@ -275,26 +276,9 @@ class QrCodeHelperTest extends TestCase {
 
 		$ref = new ReflectionMethod($this->QrCode, 'normalizeRenderOptions');
 		/** @var array<string, mixed> $withLogo */
-		$withLogo = $ref->invoke($this->QrCode, ['level' => 'M'], $content, true);
+		$withLogo = $ref->invoke($this->QrCode, ['level' => 'M'], true);
 
 		$this->assertSame('M', $withLogo['level'], 'Caller-supplied level must win over the logo auto-bump');
-	}
-
-	/**
-	 * @return void
-	 */
-	public function testDefaultLevelForPayload(): void {
-		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload('https://example.com'));
-		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload('plain text'));
-		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload(null));
-		$this->assertSame('L', QrCodeHelper::defaultLevelForPayload(''));
-
-		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('WIFI:T:WPA;S:Home;P:pwd;;'));
-		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('MECARD:N:Doe,John;;'));
-		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload("BEGIN:VCARD\nVERSION:3.0\nFN:Doe"));
-
-		// Case-insensitive prefix match — readers don't care about case, neither do we.
-		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('wifi:T:WPA;S:Home;P:pwd;;'));
 	}
 
 	public function testLongContactPreservesReleasedDefaultCapacity(): void {
@@ -304,11 +288,13 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	public function testStructuredPayloadUsesReleasedDefaultLevel(): void {
-		$method = new ReflectionMethod(QrCodeHelper::class, 'normalizeOptions');
-		$this->assertSame('L', $method->invoke($this->QrCode, [])['level']);
-		$this->QrCode->setConfig('defaultLevel', 'M');
-		$this->assertSame('M', $method->invoke($this->QrCode, [])['level']);
-		$this->assertSame('Q', $method->invoke($this->QrCode, ['level' => 'Q'])['level']);
+		$helper = new LegacyNormalizerHelper(new View());
+		$payload = 'MECARD:N:Contact;;';
+		$helper->image($payload);
+		$helper->setConfig('defaultLevel', 'M');
+		$helper->image($payload);
+		$helper->image($payload, ['level' => 'Q']);
+		$this->assertSame(['L', 'M', 'Q'], $helper->observedLevels);
 	}
 
 }

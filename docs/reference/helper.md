@@ -4,7 +4,7 @@
 
 | Option | Default | Behavior |
 | --- | --- | --- |
-| `level` | Payload-dependent | L, M, Q or H; other values resolve to L. |
+| `level` | L (H with a logo) | L, M, Q or H; other values resolve to L. |
 | `version` | Automatic | Selects a QR version through the underlying library. |
 | `scale` | 3 | Rendering scale; output-specific behavior comes from the library. |
 | `margin` | 0 | Positive values enable the quiet zone; this is an enable switch, not its width. |
@@ -14,7 +14,7 @@
 | `logo` | None | Adds a centered logo to SVG output only. |
 | `logoSize` | 0.2 | Fraction of image width, clamped between 0.05 and 0.35. |
 
-Without an explicit `level` or helper `defaultLevel`, payloads use L, preserving the existing rendering capacity. Use Q explicitly for contact or WiFi payloads when preferred.
+Without an explicit `level` or helper `defaultLevel`, payloads use L. Use Q explicitly for contact or WiFi payloads when preferred.
 A logo selects H unless the call supplies `level`. Set a helper-wide default during registration:
 
 ```php

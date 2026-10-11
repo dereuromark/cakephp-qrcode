@@ -39,9 +39,9 @@ use QrCode\Utility\FormatterInterface;
 class QrCodeHelper extends Helper {
 
 	/**
-	 * @var array{content: string|null, hasLogo: bool}
+	 * @var array{hasLogo: bool}
 	 */
-	private array $renderContext = ['content' => null, 'hasLogo' => false];
+	private array $renderContext = ['hasLogo' => false];
 
 	/**
 	 * @var array<int|string, array<string, mixed>|string>
@@ -86,7 +86,7 @@ class QrCodeHelper extends Helper {
 		$logoSize = (float)($options['logoSize'] ?? 0.2);
 		unset($options['logo'], $options['logoSize']);
 
-		$options = $this->normalizeRenderOptions($options, $content, hasLogo: $logo !== null);
+		$options = $this->normalizeRenderOptions($options, hasLogo: $logo !== null);
 
 		// When a logo overlays the centre of the QR code we need to render
 		// to a non-base64 stream so we can post-process the SVG to inject
@@ -166,7 +166,7 @@ class QrCodeHelper extends Helper {
 		$logoSize = (float)($options['logoSize'] ?? 0.2);
 		unset($options['logo'], $options['logoSize']);
 
-		$options = $this->normalizeRenderOptions($options, $content, hasLogo: $logo !== null);
+		$options = $this->normalizeRenderOptions($options, hasLogo: $logo !== null);
 		$options['outputBase64'] = false;
 
 		$qrcode = (new QRCode(new QROptions($options)))->render($content);
@@ -188,7 +188,7 @@ class QrCodeHelper extends Helper {
 	 * @return object
 	 */
 	public function resource(string $content, array $options = []): object {
-		$options = $this->normalizeRenderOptions($options, $content);
+		$options = $this->normalizeRenderOptions($options);
 
 		$options['outputBase64'] = false;
 		$options = OutputType::apply($options, OutputType::IMAGICK);
@@ -233,14 +233,13 @@ class QrCodeHelper extends Helper {
 
 	/**
 	 * @param array<string, mixed> $options Render options
-	 * @param string|null $content Payload
 	 * @param bool $hasLogo Whether a logo is overlaid
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function normalizeRenderOptions(array $options, ?string $content, bool $hasLogo = false): array {
+	private function normalizeRenderOptions(array $options, bool $hasLogo = false): array {
 		$previous = $this->renderContext;
-		$this->renderContext = ['content' => $content, 'hasLogo' => $hasLogo];
+		$this->renderContext = ['hasLogo' => $hasLogo];
 		try {
 			return $this->normalizeOptions($options);
 		} finally {
@@ -368,29 +367,6 @@ class QrCodeHelper extends Helper {
 		$mime = function_exists('mime_content_type') ? (mime_content_type($absolute) ?: 'image/png') : 'image/png';
 
 		return 'data:' . $mime . ';base64,' . base64_encode($contents);
-	}
-
-	/**
-	 * Choose Q for WiFi and contact payloads, otherwise L.
-	 *
-	 * @param string|null $content
-	 *
-	 * @return string One of `L`, `M`, `Q`, `H`.
-	 */
-	public static function defaultLevelForPayload(?string $content): string {
-		if ($content === null) {
-			return 'L';
-		}
-		$prefix = strtoupper(substr($content, 0, 16));
-		if (
-			str_starts_with($prefix, 'WIFI:')
-			|| str_starts_with($prefix, 'MECARD:')
-			|| str_starts_with($prefix, 'BEGIN:VCARD')
-		) {
-			return 'Q';
-		}
-
-		return 'L';
 	}
 
 }
