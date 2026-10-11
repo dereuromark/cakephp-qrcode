@@ -235,6 +235,7 @@ class QrCodeControllerTest extends TestCase {
 
 	/**
 	 * @param string $header
+     *
 	 * @return void
 	 */
 	#[DataProvider('nonmatchingEtagHeaders')]
