@@ -38,7 +38,7 @@ class LegacyNormalizerCompatibilityTest extends TestCase {
 		$svg = base64_decode($matches[1], true);
 		$this->assertIsString($svg);
 		$this->assertStringContainsString($logo, $svg);
-		$this->assertSame(['Q', 'H'], $helper->observedLevels);
+		$this->assertSame(['L', 'H'], $helper->observedLevels);
 		$this->assertSame('L', $helper->defaultOptions()['level']);
 	}
 
@@ -63,7 +63,7 @@ class LegacyNormalizerCompatibilityTest extends TestCase {
 		$helper = new LegacyNormalizerHelper(new View());
 		$helper->renderNested = true;
 		$this->assertStringStartsWith('<img ', $helper->image('Outer logo', ['logo' => 'data:image/png;base64,iVBORw0KGgo=']));
-		$this->assertSame(['Q', 'H'], $helper->observedLevels);
+		$this->assertSame(['L', 'H'], $helper->observedLevels);
 		$this->assertSame('L', $helper->defaultOptions()['level']);
 	}
 

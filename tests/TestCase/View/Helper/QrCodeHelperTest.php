@@ -297,4 +297,18 @@ class QrCodeHelperTest extends TestCase {
 		$this->assertSame('Q', QrCodeHelper::defaultLevelForPayload('wifi:T:WPA;S:Home;P:pwd;;'));
 	}
 
+	public function testLongContactPreservesReleasedDefaultCapacity(): void {
+		$content = 'MECARD:N:Contact;NOTE:' . str_repeat('x', 2000) . ';;';
+		$image = $this->QrCode->image($content);
+		$this->assertStringStartsWith('<img src="data:image/svg+xml;base64,', $image);
+	}
+
+	public function testStructuredPayloadUsesReleasedDefaultLevel(): void {
+		$method = new ReflectionMethod(QrCodeHelper::class, 'normalizeOptions');
+		$this->assertSame('L', $method->invoke($this->QrCode, [])['level']);
+		$this->QrCode->setConfig('defaultLevel', 'M');
+		$this->assertSame('M', $method->invoke($this->QrCode, [])['level']);
+		$this->assertSame('Q', $method->invoke($this->QrCode, ['level' => 'Q'])['level']);
+	}
+
 }

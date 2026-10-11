@@ -204,10 +204,7 @@ class QrCodeHelper extends Helper {
 	 */
 	protected function normalizeOptions(array $options): array {
 		$callerSetLevel = isset($options['level']);
-		$defaultLevel = $this->getConfig('defaultLevel');
-		if ($defaultLevel === null) {
-			$defaultLevel = static::defaultLevelForPayload($this->renderContext['content']);
-		}
+		$defaultLevel = $this->getConfig('defaultLevel') ?? 'L';
 		// Prefer H for a logo; an explicit per-call level takes precedence.
 		if ($this->renderContext['hasLogo'] && !$callerSetLevel) {
 			$defaultLevel = 'H';

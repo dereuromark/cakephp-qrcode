@@ -14,7 +14,7 @@
 | `logo` | None | Adds a centered logo to SVG output only. |
 | `logoSize` | 0.2 | Fraction of image width, clamped between 0.05 and 0.35. |
 
-Without an explicit `level`, WiFi, MECARD and vCard payload prefixes select Q; other payloads select L.
+Without an explicit `level` or helper `defaultLevel`, payloads use L, preserving the existing rendering capacity. Use Q explicitly for contact or WiFi payloads when preferred.
 A logo selects H unless the call supplies `level`. Set a helper-wide default during registration:
 
 ```php
