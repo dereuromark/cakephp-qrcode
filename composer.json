@@ -35,6 +35,7 @@
 		"chillerlan/php-qrcode": "^5.0 || ^6.0"
 	},
 	"require-dev": {
+		"dereuromark/cakephp-i18n-lint": "^0.1.1",
 		"fig-r/psr2r-sniffer": "dev-master",
 		"phpunit/phpunit": "^11.5 || ^12.1 || ^13.0"
 	},
@@ -61,7 +62,10 @@
 		"lowest": "validate-prefer-lowest",
 		"lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json",
 		"cs-check": "phpcs --colors --parallel=16",
-		"cs-fix": "phpcbf --colors --parallel=16"
+		"cs-fix": "phpcbf --colors --parallel=16",
+		"i18n-check": "i18n-lint check",
+		"i18n-extract": "i18n-lint extract",
+		"i18n-lint": "i18n-lint lint"
 	},
 	"config": {
 		"allow-plugins": {
