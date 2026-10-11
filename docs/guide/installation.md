@@ -3,7 +3,7 @@
 Install the plugin in your CakePHP application:
 
 ```sh
-composer require dereuromark/cakephp-qrcode
+composer require dereuromark/cakephp-qrcode:dev-cake6
 ```
 
 Composer checks the supported PHP and CakePHP versions from the package requirements.

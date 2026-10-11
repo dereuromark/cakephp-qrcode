@@ -40,7 +40,7 @@ class QrCodeView extends View {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected array $_defaultConfig = [
+	protected array $defaultConfig = [
 		'ext' => 'svg',
 	];
 

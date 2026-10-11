@@ -1,8 +1,8 @@
 # Upgrading and contributing
 
-This branch targets CakePHP 5. Composer declares the supported PHP, CakePHP and QR library versions.
+The `cake6` development branch targets CakePHP 6. Composer declares the supported PHP, CakePHP and QR library versions.
 Use the [version map](https://github.com/dereuromark/cakephp-qrcode/wiki#cakephp-version-map) for older CakePHP applications.
-CakePHP 6 compatibility has not been declared.
+Application view and helper overrides use `$defaultConfig` for inherited defaults. Dependency injection types now live in `Cake\Container`. The `master` branch remains available for CakePHP 5.
 
 The helper uses the upstream `outputBase64` option. Old `imageBase64` examples do not control current library output.
 Configure `defaultLevel` on the helper rather than as a global `QrCode.defaultLevel` key.

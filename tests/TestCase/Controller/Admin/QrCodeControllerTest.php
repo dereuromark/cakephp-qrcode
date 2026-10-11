@@ -63,7 +63,7 @@ class QrCodeControllerTest extends TestCase {
 		$this->assertResponseOk();
 		$this->assertContentType('image/svg+xml');
 		$document = new DOMDocument();
-		$this->assertTrue($document->loadXML((string)$this->_response->getBody()));
+		$this->assertTrue($document->loadXML((string)$this->response->getBody()));
 		$this->assertSame('svg', $document->documentElement->localName);
 
 	}
@@ -77,7 +77,7 @@ class QrCodeControllerTest extends TestCase {
 
 		$this->assertResponseOk();
 		$this->assertContentType('image/png');
-		$decoded = (new QRCode())->readFromBlob((string)$this->_response->getBody());
+		$decoded = (new QRCode())->readFromBlob((string)$this->response->getBody());
 		$this->assertSame('Foo Bar', (string)$decoded);
 	}
 
