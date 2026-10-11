@@ -34,6 +34,19 @@ class QrCodeControllerTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testIndexPostRendersZero(): void {
+		$this->post(
+			['prefix' => 'Admin', 'plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'index'],
+			['content' => '0'],
+		);
+
+		$this->assertResponseOk();
+		$this->assertResponseContains('data:image/svg+xml;base64,');
+	}
+
+	/**
 	 * @uses \QrCode\Controller\Admin\QrCodeController::image()
 	 *
 	 * @return void
