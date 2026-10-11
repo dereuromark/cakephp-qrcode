@@ -9,16 +9,11 @@ use Cake\TestSuite\TestCase;
 use chillerlan\QRCode\QRCode;
 use DOMDocument;
 
-/**
- * @uses \QrCode\Controller\Admin\QrCodeController
- */
 class QrCodeControllerTest extends TestCase {
 
 	use IntegrationTestTrait;
 
 	/**
-	 * @uses \QrCode\Controller\Admin\QrCodeController::index()
-	 *
 	 * @return void
 	 */
 	public function testIndex(): void {
@@ -50,8 +45,6 @@ class QrCodeControllerTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\Controller\Admin\QrCodeController::image()
-	 *
 	 * @return void
 	 */
 	public function testImage(): void {

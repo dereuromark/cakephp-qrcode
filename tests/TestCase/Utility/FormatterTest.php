@@ -33,8 +33,6 @@ class FormatterTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
-	 *
 	 * @return void
 	 */
 	public function testWifi(): void {

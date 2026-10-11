@@ -40,8 +40,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
-	 *
 	 * @return void
 	 */
 	public function testImage(): void {
@@ -52,8 +50,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::svg()
-	 *
 	 * @return void
 	 */
 	public function testSvg(): void {
@@ -65,8 +61,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::svg()
-	 *
 	 * @return void
 	 */
 	public function testResource(): void {
@@ -80,8 +74,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::png()
-	 *
 	 * @return void
 	 */
 	public function testPng(): void {
@@ -93,8 +85,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::raw()
-	 *
 	 * @return void
 	 */
 	public function testRaw(): void {
@@ -105,8 +95,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::formatter()
-	 *
 	 * @return void
 	 */
 	public function testFormatter(): void {
@@ -115,8 +103,6 @@ class QrCodeHelperTest extends TestCase {
 	}
 
 	/**
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
-	 *
 	 * @return void
 	 */
 	public function testImageWithOptions(): void {
@@ -129,8 +115,6 @@ class QrCodeHelperTest extends TestCase {
 	/**
 	 * Test image with ECC level Q
 	 *
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
-	 *
 	 * @return void
 	 */
 	public function testImageWithLevelQ(): void {
@@ -141,8 +125,6 @@ class QrCodeHelperTest extends TestCase {
 
 	/**
 	 * Test image with ECC level H
-	 *
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
 	 *
 	 * @return void
 	 */
@@ -155,8 +137,6 @@ class QrCodeHelperTest extends TestCase {
 	/**
 	 * Test image with margin
 	 *
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
-	 *
 	 * @return void
 	 */
 	public function testImageWithMargin(): void {
@@ -167,8 +147,6 @@ class QrCodeHelperTest extends TestCase {
 
 	/**
 	 * Test image with transparent background
-	 *
-	 * @uses \QrCode\View\Helper\QrCodeHelper::image()
 	 *
 	 * @return void
 	 */
@@ -181,8 +159,6 @@ class QrCodeHelperTest extends TestCase {
 	/**
 	 * Test svg with query options
 	 *
-	 * @uses \QrCode\View\Helper\QrCodeHelper::svg()
-	 *
 	 * @return void
 	 */
 	public function testSvgWithOptions(): void {
@@ -193,8 +169,6 @@ class QrCodeHelperTest extends TestCase {
 
 	/**
 	 * Test png with query options
-	 *
-	 * @uses \QrCode\View\Helper\QrCodeHelper::png()
 	 *
 	 * @return void
 	 */
@@ -280,7 +254,7 @@ class QrCodeHelperTest extends TestCase {
 		// Use reflection to inspect what level normalizeOptions applied
 		// rather than comparing rendered byte counts (which include the
 		// injected <image> element and varying whitespace).
-		$ref = new ReflectionMethod($this->QrCode, 'normalizeOptions');
+		$ref = new ReflectionMethod($this->QrCode, 'normalizeRenderOptions');
 		/** @var array<string, mixed> $withLogo */
 		$withLogo = $ref->invoke($this->QrCode, [], $content, true);
 		/** @var array<string, mixed> $withoutLogo */
@@ -299,7 +273,7 @@ class QrCodeHelperTest extends TestCase {
 	public function testLogoRespectsExplicitLevel(): void {
 		$content = 'https://example.com';
 
-		$ref = new ReflectionMethod($this->QrCode, 'normalizeOptions');
+		$ref = new ReflectionMethod($this->QrCode, 'normalizeRenderOptions');
 		/** @var array<string, mixed> $withLogo */
 		$withLogo = $ref->invoke($this->QrCode, ['level' => 'M'], $content, true);
 

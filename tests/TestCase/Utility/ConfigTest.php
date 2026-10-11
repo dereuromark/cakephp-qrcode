@@ -7,9 +7,6 @@ namespace QrCode\Test\TestCase\Utility;
 use Cake\TestSuite\TestCase;
 use QrCode\Utility\Config;
 
-/**
- * @uses \QrCode\Utility\Config
- */
 class ConfigTest extends TestCase {
 
 	/**

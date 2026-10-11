@@ -12,6 +12,8 @@ Controller image options are limited to the documented query parameters; advance
 The public image action now accepts only GET and HEAD; other methods return 405.
 `image()` rejects non-image output with `InvalidArgumentException` instead of returning an invalid HTML image.
 
+Custom helpers can continue overriding `normalizeOptions(array $options): array`. Rendering still calls that hook. Payload-aware error correction and logo defaults apply when the override calls the parent without setting `level`. An override that supplies its own level keeps that choice, including for logos.
+
 ## Development
 
 ```sh
