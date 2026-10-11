@@ -269,7 +269,7 @@ class QrCodeHelper extends Helper {
 		// SVG 2 `href` works on all current readers; emit the SVG 1.1
 		// `xlink:href` too for older parsers that haven't caught up.
 		$imageTag = sprintf(
-			'<image x="%s" y="%s" width="%s" height="%s" '
+			'<image xmlns:xlink="http://www.w3.org/1999/xlink" x="%s" y="%s" width="%s" height="%s" '
 			. 'href="%s" xlink:href="%s" preserveAspectRatio="xMidYMid meet"/>',
 			$x,
 			$y,

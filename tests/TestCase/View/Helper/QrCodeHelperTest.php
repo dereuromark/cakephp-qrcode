@@ -5,6 +5,7 @@ namespace QrCode\Test\TestCase\View\Helper;
 
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
+use DOMDocument;
 use Imagick;
 use QrCode\Lib\OutputType;
 use QrCode\Utility\FormatterInterface;
@@ -216,6 +217,11 @@ class QrCodeHelperTest extends TestCase {
 		$this->assertIsString($svg);
 		$this->assertStringContainsString('<image', $svg);
 		$this->assertStringContainsString($logo, $svg);
+		$document = new DOMDocument();
+		$this->assertTrue($document->loadXML($svg));
+		$imageNode = $document->getElementsByTagName('image')->item(0);
+		$this->assertNotNull($imageNode);
+		$this->assertSame($logo, $imageNode->getAttributeNS('http://www.w3.org/1999/xlink', 'href'));
 	}
 
 	/**
