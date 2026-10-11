@@ -31,3 +31,5 @@ The test suite skips Imagick-specific coverage when the extension is unavailable
 Library-specific behavior should be checked against the version installed by Composer, including the lowest supported dependency combination.
 
 Serve the built site with `npm run docs:preview`. The site uses the `/cakephp-qrcode/` base path.
+
+This CakePHP 6 branch requires `chillerlan/php-qrcode` 6.0.1 or newer in the 6.x series for PHP 8.5-compatible image output.
