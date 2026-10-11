@@ -29,18 +29,17 @@ class Application extends BaseApplication {
 
 		$routes->plugin(
 			'QrCode',
-			['path' => '/qr-code'],
 			function (RouteBuilder $builder): void {
 				$builder->connect('/', ['controller' => 'QrCode', 'action' => 'index']);
 
 				$builder->fallbacks();
-			}
+			},
+			['path' => '/qr-code'],
 		);
 
 		$routes->prefix('Admin', function (RouteBuilder $builder): void {
 			$builder->plugin(
 				'QrCode',
-				['path' => '/qr-code'],
 				function (RouteBuilder $builder): void {
 					$builder->connect('/', ['controller' => 'QrCode', 'action' => 'index']);
 

@@ -146,7 +146,7 @@ class QrCodeControllerTest extends TestCase {
 		$this->assertHeaderContains('Cache-Control', 'max-age=31536000');
 		$this->assertHeaderContains('Cache-Control', 'immutable');
 		// ETag is a hex-digest in double quotes; just assert the shape.
-		$etag = $this->_response->getHeaderLine('ETag');
+		$etag = $this->response->getHeaderLine('ETag');
 		$this->assertMatchesRegularExpression('/^"[a-f0-9]{40}"$/', $etag);
 	}
 
@@ -173,7 +173,7 @@ class QrCodeControllerTest extends TestCase {
 		$this->assertResponseCode(304);
 		// 304 must repeat the validators so the cache stays usable.
 		$this->assertHeaderContains('Cache-Control', 'max-age=31536000');
-		$this->assertSame($etag, $this->_response->getHeaderLine('ETag'));
+		$this->assertSame($etag, $this->response->getHeaderLine('ETag'));
 	}
 
 	/**
@@ -195,7 +195,7 @@ class QrCodeControllerTest extends TestCase {
 			'_ext' => 'svg',
 			'?' => ['content' => 'second'],
 		]);
-		$second = $this->_response->getHeaderLine('ETag');
+		$second = $this->response->getHeaderLine('ETag');
 		$this->assertSame('"' . sha1('second|L|svg') . '"', $second);
 
 		$this->assertResponseOk();
@@ -214,7 +214,7 @@ class QrCodeControllerTest extends TestCase {
 		$this->get(['plugin' => 'QrCode', 'controller' => 'QrCode', 'action' => 'image', '_ext' => 'svg', '?' => ['content' => 'Hello']]);
 
 		$this->assertResponseCode(304);
-		$this->assertSame('', (string)$this->_response->getBody());
+		$this->assertSame('', (string)$this->response->getBody());
 	}
 
 	/**

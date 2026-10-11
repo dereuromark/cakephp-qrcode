@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace QrCode;
 
 use Cake\Console\CommandCollection;
+use Cake\Container\ContainerInterface;
 use Cake\Core\BasePlugin;
-use Cake\Core\ContainerInterface;
 use Cake\Core\PluginApplicationInterface;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\RouteBuilder;
@@ -88,9 +88,9 @@ class QrCodePlugin extends BasePlugin {
 	/**
 	 * Register application container services.
 	 *
-	 * @link https://book.cakephp.org/5/en/development/dependency-injection.html#dependency-injection
+	 * @link https://book.cakephp.org/6/en/development/dependency-injection.html#dependency-injection
 	 *
-	 * @param \Cake\Core\ContainerInterface $container The Container to update.
+	 * @param \Cake\Container\ContainerInterface $container The Container to update.
 	 *
 	 * @return void
 	 */

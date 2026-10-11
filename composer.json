@@ -30,14 +30,14 @@
 		"source": "https://github.com/dereuromark/cakephp-qrcode/"
 	},
 	"require": {
-		"php": ">=8.2",
-		"cakephp/cakephp": "^5.1.1",
-		"chillerlan/php-qrcode": "^5.0 || ^6.0"
+		"php": ">=8.5",
+		"cakephp/cakephp": "^6.0@dev",
+		"chillerlan/php-qrcode": "^6.0.1"
 	},
 	"require-dev": {
-		"dereuromark/cakephp-i18n-lint": "^0.1.1",
+		"dereuromark/cakephp-i18n-lint": "dev-cake6",
 		"fig-r/psr2r-sniffer": "dev-master",
-		"phpunit/phpunit": "^11.5 || ^12.1 || ^13.0"
+		"phpunit/phpunit": "^13.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -72,5 +72,6 @@
 			"cakephp/plugin-installer": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
-	}
+	},
+	"minimum-stability": "dev"
 }
